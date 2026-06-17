@@ -1,0 +1,210 @@
+/* ── Gallery Page ─────────────────────────────────────── */
+.gallery-page {
+  min-height: 70vh;
+  padding-bottom: 5rem;
+  overflow: hidden;
+}
+
+/* ── Filter bar ───────────────────────────────────────── */
+.gallery-filters {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  padding: 0 1.5rem;
+}
+
+.gallery-filter-btn {
+  padding: 6px 18px;
+  border-radius: 20px;
+  border: 1px solid var(--cream-dark);
+  background: var(--white);
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.gallery-filter-btn:hover {
+  border-color: var(--pink);
+  color: var(--pink);
+}
+
+.gallery-filter-btn.active {
+  background: var(--pink);
+  color: var(--white);
+  border-color: var(--pink);
+}
+
+/* ── Mosaic wrapper ───────────────────────────────────── */
+.gallery-mosaic {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Pattern 4 wrapper — fragment o'rniga ─────────────── */
+.g-block-p4 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Row ──────────────────────────────────────────────── */
+.g-row {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Pattern 1: katta chap + 2 kichik o'ng */
+.g-row.p1 {
+  grid-template-columns: 2fr 1fr;
+  height: 280px;
+}
+
+/* Pattern 2: 3 teng ustun */
+.g-row.p2 {
+  grid-template-columns: 1fr 1fr 1fr;
+  height: 210px;
+}
+
+/* Pattern 3: 2 kichik chap + katta o'ng */
+.g-row.p3 {
+  grid-template-columns: 1fr 2fr;
+  height: 260px;
+}
+
+/* Pattern 4: banner + 4 kichik */
+.g-row.p4-top {
+  grid-template-columns: 1fr;
+  height: 190px;
+}
+
+.g-row.p4-bottom {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  height: 150px;
+}
+
+/* Pattern 5: 2 katta + 2 kichik o'ngda */
+.g-row.p5 {
+  grid-template-columns: 1fr 1fr 1fr;
+  height: 240px;
+}
+
+/* ── Col (vertikal juftlash uchun) ───────────────────── */
+.g-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.g-col .g-cell {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Cell ─────────────────────────────────────────────── */
+.g-cell {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  cursor: pointer;
+  background: var(--cream-dark);
+  height: 100%;
+  min-height: 0;
+}
+
+.g-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.g-cell:hover img {
+  transform: scale(1.07);
+}
+
+/* ── Hover overlay ────────────────────────────────────── */
+.g-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(to top, rgba(42, 20, 20, 0.78) 0%, transparent 55%);
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+}
+
+.g-cell:hover .g-overlay {
+  opacity: 1;
+}
+
+.g-overlay-cat {
+  font-size: 0.68rem;
+  color: var(--pink-light);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.g-overlay-title {
+  font-size: 0.9rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── Empty state ──────────────────────────────────────── */
+.gallery-empty {
+  text-align: center;
+  padding: 4rem 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .g-row.p1,
+  .g-row.p3,
+  .g-row.p5 {
+    grid-template-columns: 1fr 1fr;
+    height: 200px;
+  }
+
+  .g-row.p2 {
+    grid-template-columns: 1fr 1fr;
+    height: 180px;
+  }
+
+  .g-row.p4-bottom {
+    grid-template-columns: 1fr 1fr;
+    height: 130px;
+  }
+
+  .gallery-mosaic {
+    padding: 0 1rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .g-row.p1,
+  .g-row.p2,
+  .g-row.p3,
+  .g-row.p4-top,
+  .g-row.p4-bottom,
+  .g-row.p5 {
+    grid-template-columns: 1fr 1fr;
+    height: 150px;
+  }
+}

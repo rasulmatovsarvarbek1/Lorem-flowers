@@ -1,0 +1,450 @@
+/* ───────────────────────────────────────────────────────────────
+   CONTACT PAGE — Gala Flowers (yangi dizayn)
+─────────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap');
+
+.contact-page {
+  min-height: 100vh;
+  background: #faf8f5;
+  font-family: 'Inter', sans-serif;
+
+  --green:       #2d5a27;
+  --green-light: #e8f0e6;
+  --green-mid:   #4a7c43;
+  --blush:       #f5e6e0;
+  --blush-dark:  #e8c8be;
+  --petal:       #d4896a;
+  --petal-deep:  #b8674a;
+  --cream:       #faf8f5;
+  --cream-dark:  #f0ebe3;
+  --ink:         #1a1a18;
+  --ink-soft:    #4a4840;
+  --muted:       #9a9285;
+  --white:       #ffffff;
+  --border:      rgba(42,36,21,0.09);
+}
+
+/* ─── PAGE INTRO ─────────────────────────────────────────────── */
+.contact-intro {
+  padding: 4rem 1.5rem 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.contact-intro-left {}
+
+.contact-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--green-mid);
+  margin-bottom: 0.9rem;
+}
+
+.contact-eyebrow span {
+  display: inline-block;
+  width: 28px;
+  height: 1.5px;
+  background: var(--green-mid);
+}
+
+.contact-page-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.1;
+  margin: 0;
+}
+
+.contact-page-title em {
+  font-style: italic;
+  color: var(--petal);
+}
+
+.contact-intro-sub {
+  font-size: 0.92rem;
+  color: var(--muted);
+  max-width: 320px;
+  line-height: 1.65;
+  text-align: right;
+  padding-bottom: 0.3rem;
+}
+
+/* ─── CONTACT CARDS ──────────────────────────────────────────── */
+.contact-info-section {
+  padding: 2.5rem 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.contact-info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.contact-card {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 1.6rem 1.4rem;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: transparent;
+  transition: background 0.22s ease;
+}
+
+.contact-card:hover {
+  box-shadow: 0 8px 28px rgba(42,36,21,0.1);
+  transform: translateY(-2px);
+}
+
+.contact-card:hover::after { background: var(--petal); }
+
+.contact-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.9rem;
+}
+
+.contact-card-icon.icon-peach { background: var(--blush); color: var(--petal-deep); }
+.contact-card-icon.icon-blue  { background: #ddf0fb; color: #1a87c2; }
+.contact-card-icon.icon-pink  { background: #fde1ee; color: #c0356a; }
+.contact-card-icon.icon-green { background: var(--green-light); color: var(--green); }
+
+.contact-card-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin: 0 0 0.25rem;
+}
+
+.contact-card-line {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.contact-card-note {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0.5rem 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.contact-card-note::before {
+  content: '';
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--petal);
+  flex-shrink: 0;
+}
+
+/* ─── SOCIAL ─────────────────────────────────────────────────── */
+.contact-social-section {
+  padding: 0 1.5rem 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.contact-social {
+  background: var(--green);
+  border-radius: 20px;
+  padding: 1.4rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.contact-social-label {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.contact-social-links {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.contact-social-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.48rem 1.1rem 0.48rem 0.48rem;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 30px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  background: rgba(255,255,255,0.06);
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.contact-social-btn:hover {
+  border-color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+
+.contact-social-icon {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contact-social-icon.icon-telegram  { background: rgba(41,169,224,0.25); color: #7dd4f7; }
+.contact-social-icon.icon-instagram { background: rgba(214,51,108,0.25); color: #f78db0; }
+.contact-social-icon.icon-youtube   { background: rgba(224,36,36,0.25);  color: #f78d8d; }
+
+/* ─── FAQ — yangi dizayn ─────────────────────────────────────── */
+.contact-faq-section {
+  padding: 4rem 1.5rem 5rem;
+  background: var(--cream-dark);
+}
+
+.contact-faq {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.contact-faq-sidebar {
+  position: sticky;
+  top: 2rem;
+}
+
+.contact-faq-sidebar-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--petal);
+  margin-bottom: 0.8rem;
+}
+
+.contact-faq-sidebar-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1.2;
+  margin: 0 0 1.2rem;
+}
+
+.contact-faq-sidebar-title em {
+  font-style: italic;
+  color: var(--petal);
+}
+
+.contact-faq-sidebar-desc {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  margin: 0 0 1.8rem;
+}
+
+.contact-faq-sidebar-flower {
+  font-size: 4.5rem;
+  line-height: 1;
+  opacity: 0.55;
+  display: block;
+}
+
+.contact-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.contact-faq-item {
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.contact-faq-item:first-child {
+  border-top: 1px solid var(--border);
+}
+
+.contact-faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.2rem 0;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.93rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.contact-faq-item.open .contact-faq-question {
+  color: var(--petal-deep);
+}
+
+.contact-faq-question-text {
+  flex: 1;
+}
+
+.contact-faq-chevron {
+  flex-shrink: 0;
+  color: var(--muted);
+  transition: transform 0.25s ease, color 0.25s ease;
+  display: flex;
+}
+
+.contact-faq-item.open .contact-faq-chevron {
+  transform: rotate(180deg);
+  color: var(--petal);
+}
+
+.contact-faq-answer-wrap {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.32s ease;
+}
+
+.contact-faq-item.open .contact-faq-answer-wrap {
+  max-height: 300px;
+}
+
+.contact-faq-answer {
+  margin: 0;
+  padding: 0 0 1.3rem;
+  font-size: 0.87rem;
+  line-height: 1.75;
+  color: var(--ink-soft);
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .contact-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contact-faq {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .contact-faq-sidebar {
+    position: static;
+  }
+
+  .contact-faq-sidebar-flower {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .contact-intro {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .contact-intro-sub {
+    text-align: left;
+    max-width: 100%;
+  }
+
+  .contact-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-social {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+/* ═══════════════════════════════════════════════════════
+   CONTACT EXTRA RESPONSIVE
+═══════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .contact-page-title {
+    font-size: 2rem;
+  }
+
+  .contact-intro {
+    padding: 2.5rem 1rem 2rem;
+  }
+
+  .contact-info-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .contact-social-section {
+    padding: 0 1rem 2rem;
+  }
+
+  .contact-faq-section {
+    padding: 3rem 1rem 4rem;
+  }
+
+  .contact-social {
+    padding: 1.2rem 1.2rem;
+    border-radius: 14px;
+  }
+
+  .contact-social-links {
+    gap: 0.5rem;
+  }
+
+  .contact-social-btn {
+    font-size: 0.78rem;
+    padding: 0.4rem 0.9rem 0.4rem 0.4rem;
+  }
+}

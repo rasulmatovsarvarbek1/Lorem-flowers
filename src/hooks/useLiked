@@ -1,0 +1,13 @@
+import { useState } from 'react'
+
+export function useLiked() {
+  const [likedIds, setLikedIds] = useState([])
+
+  const toggleLike = (id) => {
+    setLikedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    )
+  }
+
+  return { likedIds, toggleLike }
+}

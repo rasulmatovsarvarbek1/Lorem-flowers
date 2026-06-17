@@ -1,0 +1,315 @@
+/* ─── LIKED HERO ─── */
+.liked-hero {
+  position: relative;
+  height: 260px;
+  background: linear-gradient(135deg, #c4848a 0%, #e8b4b8 60%, #f2dde0 100%);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.liked-hero-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background-image:
+    radial-gradient(circle at 20% 40%, #fff 1.5px, transparent 1.5px),
+    radial-gradient(circle at 70% 20%, #fff 1px, transparent 1px),
+    radial-gradient(circle at 50% 75%, #fff 2px, transparent 2px),
+    radial-gradient(circle at 85% 60%, #fff 1px, transparent 1px);
+  background-size: 60px 60px, 80px 80px, 45px 45px, 100px 100px;
+}
+
+.liked-hero-deco {
+  position: absolute;
+  right: 3rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 8rem;
+  opacity: 0.18;
+  line-height: 1;
+  pointer-events: none;
+  color: #fff;
+}
+
+.liked-hero-content {
+  position: relative;
+  z-index: 1;
+  padding: 0 3rem 2.5rem;
+}
+
+.liked-hero-eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.liked-hero-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+
+.liked-hero-sub {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 420px;
+  line-height: 1.5;
+}
+
+/* ─── SECTION TOP ─── */
+.liked-section-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 3rem 1rem;
+}
+
+.liked-section-top h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.liked-count {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  background: var(--cream-dark);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* ─── GRID ─── */
+.liked-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.1rem;
+  padding: 0 3rem 4rem;
+}
+
+/* ─── LIKED CARD ─── */
+.liked-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.liked-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.09);
+}
+
+.liked-card-img {
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.liked-card-img.lola    { background: #fdf0f5; }
+.liked-card-img.atirgul { background: #fff0f0; }
+.liked-card-img.pion    { background: #f8f0ff; }
+.liked-card-img.tulpan  { background: #f0f8ff; }
+.liked-card-img.nargiz  { background: #fffbe0; }
+.liked-card-img.gilos   { background: #fff0f8; }
+.liked-card-img.aralash { background: #f5fff0; }
+
+.liked-card-real-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.liked-card:hover .liked-card-real-img {
+  transform: scale(1.07);
+}
+
+.liked-card-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text);
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+}
+
+/* ─── UNLIKE BUTTON (filled pink heart) ─── */
+.liked-unlike-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pink);
+  transition: color 0.2s, transform 0.15s, background 0.2s;
+  padding: 0;
+  z-index: 2;
+}
+
+.liked-unlike-btn svg {
+  width: 16px;
+  height: 16px;
+  filter: drop-shadow(0 0 3px rgba(196, 132, 138, 0.4));
+}
+
+.liked-unlike-btn:hover {
+  color: #b07278;
+  transform: scale(1.12);
+  background: rgba(255, 255, 255, 0.98);
+}
+
+/* ─── CARD BODY ─── */
+.liked-card-body {
+  padding: 1rem;
+}
+
+.liked-card-type {
+  font-size: 0.68rem;
+  color: var(--pink);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+}
+
+.liked-card-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+
+.liked-card-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.liked-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.liked-card-price {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.liked-card-price small {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.liked-cart-btn {
+  background: var(--pink-pale);
+  color: var(--pink);
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.liked-cart-btn:hover {
+  background: var(--pink);
+  color: var(--white);
+}
+
+/* ─── EMPTY STATE ─── */
+.liked-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 5rem 2rem;
+  color: var(--text-muted);
+}
+
+.liked-empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.liked-empty h3 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+.liked-empty p {
+  font-size: 0.82rem;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1100px) {
+  .liked-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .liked-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 1.5rem 3rem;
+  }
+
+  .liked-section-top {
+    padding: 1rem 1.5rem 0.75rem;
+  }
+
+  .liked-hero-content {
+    padding: 0 1.5rem 2rem;
+  }
+
+  .liked-hero-title {
+    font-size: 2rem;
+  }
+
+  .liked-hero-deco {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .liked-grid {
+    grid-template-columns: 1fr;
+  }
+}

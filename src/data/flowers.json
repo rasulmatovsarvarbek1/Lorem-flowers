@@ -1,0 +1,103 @@
+{
+  "hero": {
+    "title": "Har bir lahza\nuchun gullar",
+    "subtitle": "Tabriklash, sevgi izhori yoki shunchaki kun yaxshi o'tishi uchun — eng yangi va chiroyli gul kompozitsiyalarini tanlang.",
+    "image": "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&q=80"
+  },
+  "collections": [
+    {
+      "id": 1,
+      "name": "To'y uchun",
+      "description": "Nafis va romantik kompozitsiyalar",
+      "count": 24,
+      "image": "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=600&q=80"
+    },
+    {
+      "id": 2,
+      "name": "Tug'ilgan kun",
+      "description": "Quvonchli va rangbarang buketlar",
+      "count": 18,
+      "image": "https://images.unsplash.com/photo-1487070183336-b863922373d4?w=600&q=80"
+    },
+    {
+      "id": 3,
+      "name": "Romantik",
+      "description": "Sevgi va e'tirof uchun gullar",
+      "count": 32,
+      "image": "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=600&q=80"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "name": "Qizil atirgullar buketi",
+      "badge": "Yangi",
+      "rating": 4.8,
+      "reviews": 124,
+      "price": 250000,
+      "image": "https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=400&q=80"
+    },
+    {
+      "id": 2,
+      "name": "Pion kompozitsiyasi",
+      "badge": "Mashhur",
+      "rating": 4.9,
+      "reviews": 89,
+      "price": 320000,
+      "image": "https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=400&q=80"
+    },
+    {
+      "id": 3,
+      "name": "Lola savatchasi",
+      "badge": "Chegirma",
+      "rating": 4.6,
+      "reviews": 56,
+      "price": 180000,
+      "image": "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=400&q=80"
+    },
+    {
+      "id": 4,
+      "name": "Aralash gullar buketi",
+      "badge": "Yangi",
+      "rating": 4.7,
+      "reviews": 102,
+      "price": 290000,
+      "image": "https://images.unsplash.com/photo-1487070183336-b863922373d4?w=400&q=80"
+    },
+    {
+      "id": 5,
+      "name": "Oq atirgullar buketi",
+      "badge": "Premium",
+      "rating": 5.0,
+      "reviews": 47,
+      "price": 350000,
+      "image": "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=400&q=80"
+    },
+    {
+      "id": 6,
+      "name": "Quvonchli ranglar",
+      "badge": "Mashhur",
+      "rating": 4.5,
+      "reviews": 73,
+      "price": 210000,
+      "image": "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=400&q=80"
+    }
+  ],
+  "steps": [
+    {
+      "id": 1,
+      "title": "Gulni Tanlang",
+      "description": "Kolleksiyamizdan o'zingizga yoqqan gul kompozitsiyasini tanlang."
+    },
+    {
+      "id": 2,
+      "title": "Tayyorlab Beramiz",
+      "description": "Tajribali gulchilarimiz eng yangi gullardan buket tayyorlaydi."
+    },
+    {
+      "id": 3,
+      "title": "Eshigingizga Keladi",
+      "description": "Chiroyli buketingizni vaqtida va yangi holda yetkazib beramiz."
+    }
+  ]
+}

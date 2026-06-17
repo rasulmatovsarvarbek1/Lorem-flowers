@@ -1,0 +1,94 @@
+{
+  "photos": [
+    {
+      "id": 1,
+      "imageUrl": "https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=600&h=500&fit=crop",
+      "title": "Qizil atirgul buketi",
+      "category": "Buketlar"
+    },
+    {
+      "id": 2,
+      "imageUrl": "https://images.unsplash.com/photo-1576016770956-debb63d92058?w=600&h=500&fit=crop",
+      "title": "Pushti lola to'plami",
+      "category": "Buketlar"
+    },
+    {
+      "id": 3,
+      "imageUrl": "https://images.unsplash.com/photo-1559563458-527698bf5295?w=600&h=500&fit=crop",
+      "title": "Oq pion guldasta",
+      "category": "Kelin uchun"
+    },
+    {
+      "id": 4,
+      "imageUrl": "https://images.unsplash.com/photo-1525310072745-f49212b5ac6d?w=600&h=500&fit=crop",
+      "title": "Bahor ranglari",
+      "category": "Buketlar"
+    },
+    {
+      "id": 5,
+      "imageUrl": "https://images.unsplash.com/photo-1490750967868-88df5691cc8b?w=600&h=500&fit=crop",
+      "title": "Aralash gul kompozitsiya",
+      "category": "Bayram uchun"
+    },
+    {
+      "id": 6,
+      "imageUrl": "https://images.unsplash.com/photo-1487530811015-780c8e404c7a?w=600&h=500&fit=crop",
+      "title": "Premium atirgul",
+      "category": "Buketlar"
+    },
+    {
+      "id": 7,
+      "imageUrl": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=500&fit=crop",
+      "title": "Uy bezagi uchun",
+      "category": "Uy bezagi"
+    },
+    {
+      "id": 8,
+      "imageUrl": "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=600&h=500&fit=crop",
+      "title": "Kelin guldastasi",
+      "category": "Kelin uchun"
+    },
+    {
+      "id": 9,
+      "imageUrl": "https://images.unsplash.com/photo-1455582916367-25f75bfc6710?w=600&h=500&fit=crop",
+      "title": "Pushti atirgullar",
+      "category": "Buketlar"
+    },
+    {
+      "id": 10,
+      "imageUrl": "https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=600&h=500&fit=crop",
+      "title": "Oq lola guldasta",
+      "category": "Kelin uchun"
+    },
+    {
+      "id": 11,
+      "imageUrl": "https://images.unsplash.com/photo-1520763185298-1b434c919102?w=600&h=500&fit=crop",
+      "title": "Binafsha lola",
+      "category": "Buketlar"
+    },
+    {
+      "id": 12,
+      "imageUrl": "https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?w=600&h=500&fit=crop",
+      "title": "8-mart sovg'asi",
+      "category": "Bayram uchun"
+    },
+    {
+      "id": 13,
+      "imageUrl": "https://images.unsplash.com/photo-1599733594230-6b823276abcc?w=600&h=500&fit=crop",
+      "title": "Tug'ilgan kun buketi",
+      "category": "Bayram uchun"
+    },
+    {
+      "id": 14,
+      "imageUrl": "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&h=500&fit=crop",
+      "title": "To'y guldastasi",
+      "category": "Kelin uchun"
+    },
+    {
+      "id": 15,
+      "imageUrl": "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=600&h=500&fit=crop",
+      "title": "Stol bezagi",
+      "category": "Uy bezagi"
+    }
+  ]
+}
