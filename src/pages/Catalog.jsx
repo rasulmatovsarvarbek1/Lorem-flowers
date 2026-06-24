@@ -1,26 +1,19 @@
 import { useState, useEffect, useCallback } from 'react'
-import catalogData from '../data/catalog.json'
+import { supabase } from '../supabase'
 import './Catalog.css'
 
-// ─── localStorage DAN CATALOG O'QI ──────────────────────────────
-function loadProducts() {
-  try {
-    const saved = localStorage.getItem('fratino_catalog')
-    if (saved) return JSON.parse(saved)
-  } catch {}
-  return catalogData.products
-}
+const DEFAULT_HARF_PKGS = [
+  { id: 'h1', label: 'Kichik', red: 25, white: 15, price: 225000, image: '' },
+  { id: 'h2', label: "O'rta",  red: 35, white: 25, price: 380000, image: '' },
+  { id: 'h3', label: 'Katta',  red: 50, white: 30, price: 520000, image: '' },
+]
 
 function loadHarfPkgs() {
   try {
     const s = localStorage.getItem('fratino_harf_pkgs')
     if (s) return JSON.parse(s)
   } catch {}
-  return [
-    { id: 'h1', label: 'Kichik', red: 25, white: 15, price: 225000, image: '' },
-    { id: 'h2', label: "O'rta",  red: 35, white: 25, price: 380000, image: '' },
-    { id: 'h3', label: 'Katta',  red: 50, white: 30, price: 520000, image: '' },
-  ]
+  return DEFAULT_HARF_PKGS
 }
 
 // ─── ISM UZUNLIGI KOEFFITSIENTLARI (admin paneldan tahrirlanadi) ─
@@ -340,8 +333,7 @@ function ProductCard({ product, isDona, onSelect, liked, onToggleLike, onAddToCa
             className={`cat-add-btn${isDona ? ' dona' : ''}`}
             onClick={(e) => {
               e.stopPropagation()
-              if (isDona) onAddToCart(product, qty)
-              else onSelect(product)
+              onAddToCart(product, isDona ? qty : 1)
             }}
           >
             {isDona ? `${qty} dona` : 'Savatga'}
@@ -515,21 +507,21 @@ function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
 
 // ─── CATALOG PAGE ───────────────────────────────────────────────
 export default function Catalog({ likedIds, onToggleLike, onAddToCart }) {
-  const { categories } = catalogData
-
-  const [products, setProducts] = useState(() => loadProducts())
+  const [categories, setCategories] = useState([])
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const onStorage = (e) => {
-      if (e.key === 'fratino_catalog') setProducts(loadProducts())
+    async function fetchData() {
+      const [catRes, prodRes] = await Promise.all([
+        supabase.from('categories').select('*'),
+        supabase.from('products').select('*').order('id', { ascending: false }),
+      ])
+      setCategories(catRes.data || [])
+      setProducts(prodRes.data || [])
+      setLoading(false)
     }
-    const onCustom = () => setProducts(loadProducts())
-    window.addEventListener('storage', onStorage)
-    window.addEventListener('fratino_catalog_updated', onCustom)
-    return () => {
-      window.removeEventListener('storage', onStorage)
-      window.removeEventListener('fratino_catalog_updated', onCustom)
-    }
+    fetchData()
   }, [])
 
   const [activeCatId, setActiveCatId]   = useState('buket')
@@ -561,7 +553,9 @@ export default function Catalog({ likedIds, onToggleLike, onAddToCart }) {
     }
   }, [])
 
-  const activeCat = categories.find(c => c.id === activeCatId)
+  const closeModal = useCallback(() => setSelectedProduct(null), [])
+
+  const activeCat = categories.find(c => c.id === activeCatId) || {}
 
   const handleCatChange = (catId) => {
     setActiveCatId(catId)
@@ -576,7 +570,7 @@ export default function Catalog({ likedIds, onToggleLike, onAddToCart }) {
     return p.type === activeFilter || p.badge === activeFilter
   })
 
-  const closeModal = useCallback(() => setSelectedProduct(null), [])
+  if (loading) return <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>Yuklanmoqda...</div>
 
   return (
     <div className="catalog-page">
@@ -607,7 +601,7 @@ export default function Catalog({ likedIds, onToggleLike, onAddToCart }) {
       {activeCatId !== 'harf' && (
         <div className="catalog-filter-row">
           <span className="filter-row-label">Filter:</span>
-          {activeCat.filters.map(f => (
+          {(activeCat.filters || []).map(f => (
             <button
               key={f}
               className={`filter-tag${activeFilter === f ? ' active' : ''}`}

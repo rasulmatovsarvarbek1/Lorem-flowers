@@ -550,47 +550,13 @@
   background: #27ae60;
 }
 
-/* ─── RESPONSIVE ─── */
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — 1100px
+═══════════════════════════════════════════════════════ */
 @media (max-width: 1100px) {
   .catalog-products-grid {
     grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .catalog-products-grid {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 0 1.5rem 3rem;
-  }
-
-  .catalog-big-cats {
-    padding: 1rem 1.5rem 0.5rem;
-  }
-
-  .catalog-filter-row {
-    padding: 0.75rem 1.5rem;
-  }
-
-  .catalog-section-top {
-    padding: 1rem 1.5rem 0.75rem;
-  }
-
-  .catalog-hero-content {
-    padding: 0 1.5rem 2rem;
-  }
-
-  .catalog-hero-title {
-    font-size: 2rem;
-  }
-
-  .catalog-hero-deco {
-    display: none;
-  }
-}
-
-@media (max-width: 480px) {
-  .catalog-products-grid {
-    grid-template-columns: 1fr;
+    padding: 0 2rem 3.5rem;
   }
 }
 /* ─── REAL FLOWER IMAGES ─── */
@@ -602,7 +568,7 @@
 .cat-product-real-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   display: block;
   transition: transform 0.4s ease;
@@ -628,7 +594,7 @@
 .modal-real-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   display: block;
 }
@@ -1059,6 +1025,422 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CATALOG RESPONSIVE — 900px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  /* Hero */
+  .catalog-hero {
+    height: 200px;
+  }
+
+  .catalog-hero-title {
+    font-size: 2rem;
+  }
+
+  .catalog-hero-content {
+    padding: 0 1.5rem 2rem;
+  }
+
+  .catalog-hero-deco {
+    font-size: 5rem;
+    right: 2rem;
+  }
+
+  /* Kategoriyalar */
+  .catalog-big-cats {
+    padding: 1.25rem 1.5rem 0.5rem;
+    gap: 0.5rem;
+  }
+
+  /* Filter */
+  .catalog-filter-row {
+    padding: 0.75rem 1.5rem;
+  }
+
+  /* Section top */
+  .catalog-section-top {
+    padding: 1rem 1.5rem 0.75rem;
+  }
+
+  /* Grid */
+  .catalog-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 1.5rem 3rem;
+    gap: 0.85rem;
+  }
+
+  /* Modal */
+  .modal-box {
+    width: 320px;
+  }
+
+  /* Harf inline */
+  .harf-inline-wrap {
+    padding: 0.5rem 0 1.5rem;
+  }
+
+  .harf-inline-pkgs-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .harf-inline-pkg-img-wrap {
+    height: 120px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CATALOG RESPONSIVE — 600px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  /* Hero */
+  .catalog-hero {
+    height: 150px;
+  }
+
+  .catalog-hero-title {
+    font-size: 1.55rem;
+  }
+
+  .catalog-hero-sub {
+    font-size: 0.78rem;
+  }
+
+  .catalog-hero-content {
+    padding: 0 1rem 1.25rem;
+  }
+
+  .catalog-hero-deco {
+    display: none;
+  }
+
+  /* Kategoriyalar */
+  .catalog-big-cats {
+    padding: 0.85rem 1rem 0.4rem;
+    gap: 0.4rem;
+  }
+
+  .big-cat-btn {
+    padding: 10px 12px;
+    min-width: 68px;
+    border-radius: 12px;
+  }
+
+  .big-cat-label {
+    font-size: 0.63rem;
+  }
+
+  /* Filter */
+  .catalog-filter-row {
+    padding: 0.6rem 1rem;
+    gap: 0.35rem;
+  }
+
+  .filter-tag {
+    padding: 4px 12px;
+    font-size: 0.7rem;
+  }
+
+  /* Section top */
+  .catalog-section-top {
+    padding: 0.85rem 1rem 0.6rem;
+  }
+
+  .catalog-section-top h2 {
+    font-size: 1.15rem;
+  }
+
+  /* Grid */
+  .catalog-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 1rem 2.5rem;
+    gap: 0.6rem;
+  }
+
+  /* Karta */
+  .cat-product-img {
+    height: 130px;
+  }
+
+  .cat-product-body {
+    padding: 0.75rem;
+  }
+
+  .cat-product-name {
+    font-size: 0.85rem;
+  }
+
+  .cat-product-desc {
+    font-size: 0.7rem;
+    margin-bottom: 8px;
+  }
+
+  .cat-product-price {
+    font-size: 0.82rem;
+  }
+
+  .cat-add-btn {
+    font-size: 0.68rem;
+    padding: 5px 10px;
+  }
+
+  /* Like tugmasi */
+  .card-like-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* Modal — pastdan chiqadi */
+  .modal-backdrop {
+    align-items: flex-end;
+  }
+
+  .modal-box {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* Harf inline */
+  .harf-inline-btns {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .harf-inline-btn {
+    padding: 1rem 1.1rem;
+    border-radius: 16px;
+  }
+
+  .harf-inline-pkgs-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .harf-inline-pkg-card {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    gap: 10px;
+  }
+
+  .harf-inline-pkg-img-wrap {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+    border-radius: 10px;
+  }
+
+  .harf-inline-pkg-flowers {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .harf-inline-pkg-check {
+    top: 8px;
+    right: 8px;
+  }
+
+  .harf-inline-total {
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CATALOG RESPONSIVE — 400px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 400px) {
+  .catalog-hero {
+    height: 130px;
+  }
+
+  .catalog-hero-title {
+    font-size: 1.3rem;
+  }
+
+  .catalog-hero-sub {
+    display: none;
+  }
+
+  .catalog-big-cats {
+    padding: 0.75rem 0.75rem 0.35rem;
+    gap: 0.3rem;
+  }
+
+  .big-cat-btn {
+    padding: 8px 10px;
+    min-width: 60px;
+    gap: 5px;
+  }
+
+  .big-cat-label {
+    font-size: 0.58rem;
+  }
+
+  .catalog-products-grid {
+    padding: 0 0.75rem 2rem;
+    gap: 0.5rem;
+  }
+
+  .cat-product-img {
+    height: 115px;
+  }
+
+  .cat-product-body {
+    padding: 0.6rem;
+  }
+
+  .cat-product-name {
+    font-size: 0.78rem;
+  }
+
+  .cat-product-price {
+    font-size: 0.75rem;
+  }
+
+  .cat-add-btn {
+    font-size: 0.62rem;
+    padding: 4px 8px;
+  }
+
+  .card-qty-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 0.95rem;
+  }
+
+  .card-qty-num {
+    font-size: 0.88rem;
+    min-width: 18px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CATALOG RESPONSIVE — 320px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 320px) {
+  .catalog-hero {
+    height: 110px;
+  }
+
+  .catalog-hero-title {
+    font-size: 1.15rem;
+  }
+
+  .catalog-hero-content {
+    padding: 0 0.75rem 1rem;
+  }
+
+  .catalog-big-cats {
+    padding: 0.6rem 0.6rem 0.3rem;
+    gap: 0.25rem;
+  }
+
+  .big-cat-btn {
+    padding: 7px 8px;
+    min-width: 52px;
+    border-radius: 10px;
+  }
+
+  .big-cat-label {
+    font-size: 0.54rem;
+  }
+
+  .catalog-filter-row {
+    padding: 0.5rem 0.75rem;
+    gap: 0.25rem;
+  }
+
+  .filter-tag {
+    padding: 3px 10px;
+    font-size: 0.65rem;
+  }
+
+  .catalog-section-top {
+    padding: 0.65rem 0.75rem 0.5rem;
+  }
+
+  .catalog-section-top h2 {
+    font-size: 1rem;
+  }
+
+  .catalog-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 0.6rem 1.75rem;
+    gap: 0.4rem;
+  }
+
+  .cat-product-img {
+    height: 100px;
+  }
+
+  .cat-product-body {
+    padding: 0.5rem;
+  }
+
+  .cat-product-name {
+    font-size: 0.72rem;
+    margin-bottom: 3px;
+  }
+
+  .cat-product-desc {
+    font-size: 0.65rem;
+    margin-bottom: 6px;
+  }
+
+  .cat-product-price {
+    font-size: 0.68rem;
+  }
+
+  .cat-add-btn {
+    font-size: 0.58rem;
+    padding: 3px 7px;
+  }
+
+  .card-like-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .card-like-btn svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .harf-inline-btn {
+    padding: 0.85rem 0.9rem;
+  }
+
+  .harf-inline-btn-title {
+    font-size: 0.9rem;
+  }
+
+  .harf-inline-pkg-img-wrap {
+    width: 68px;
+    height: 68px;
+  }
+
+  .modal-box {
+    padding: 1.25rem;
+  }
+
+  .modal-name {
+    font-size: 1rem;
+  }
+
+  .modal-img-wrap {
+    height: 170px;
   }
 }
 
@@ -2027,120 +2409,4 @@
   padding: 3px 10px;
   border-radius: 20px;
   backdrop-filter: blur(4px);
-}
-/* ═══════════════════════════════════════════════════════
-   CATALOG RESPONSIVE
-═══════════════════════════════════════════════════════ */
-@media (max-width: 900px) {
-  .catalog-hero {
-    height: 200px;
-  }
-
-  .catalog-hero-title {
-    font-size: 2rem;
-  }
-
-  .catalog-hero-content {
-    padding: 0 1.5rem 2rem;
-  }
-
-  .catalog-big-cats {
-    padding: 1.25rem 1.5rem 0.5rem;
-    gap: 0.5rem;
-  }
-
-  .catalog-filter-row {
-    padding: 0.75rem 1.5rem;
-  }
-
-  .catalog-section-top {
-    padding: 1rem 1.5rem 0.75rem;
-  }
-
-  .catalog-products-grid {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 0 1.5rem 3rem;
-    gap: 0.85rem;
-  }
-
-  /* Modal */
-  .modal-box {
-    width: 320px;
-  }
-}
-
-@media (max-width: 600px) {
-  .catalog-hero {
-    height: 160px;
-  }
-
-  .catalog-hero-title {
-    font-size: 1.6rem;
-  }
-
-  .catalog-hero-content {
-    padding: 0 1rem 1.5rem;
-  }
-
-  .catalog-big-cats {
-    padding: 1rem 1rem 0.5rem;
-    gap: 0.4rem;
-  }
-
-  .big-cat-btn {
-    padding: 10px 12px;
-    min-width: 72px;
-  }
-
-  .big-cat-label {
-    font-size: 0.65rem;
-  }
-
-  .catalog-filter-row {
-    padding: 0.65rem 1rem;
-  }
-
-  .catalog-section-top {
-    padding: 0.85rem 1rem 0.6rem;
-  }
-
-  .catalog-products-grid {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 0 1rem 2.5rem;
-    gap: 0.65rem;
-  }
-
-  .cat-product-img {
-    height: 130px;
-  }
-
-  .cat-product-body {
-    padding: 0.75rem;
-  }
-
-  .cat-product-name {
-    font-size: 0.85rem;
-  }
-
-  /* Modal full width on mobile */
-  .modal-backdrop {
-    align-items: flex-end;
-  }
-
-  .modal-box {
-    width: 100%;
-    max-width: 100%;
-    border-radius: 20px 20px 0 0;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  /* Harf inline */
-  .harf-inline-btns {
-    grid-template-columns: 1fr;
-  }
-
-  .harf-inline-pkgs-grid {
-    grid-template-columns: 1fr;
-  }
 }

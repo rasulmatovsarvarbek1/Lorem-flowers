@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import catalogData from '../data/catalog.json'
+import { supabase } from '../supabase'
 
 function fmt(n) {
   return new Intl.NumberFormat('uz-UZ').format(Math.round(n)) + " so'm"
@@ -25,36 +25,77 @@ const IMG_CLASSES = [
   { id: 'aralash', label: 'Yashil (Aralash)' },
 ]
 
-// localStorage dan catalog o'qi, yo'q bo'lsa catalog.json
-function loadCatalog() {
-  try {
-    const saved = localStorage.getItem('fratino_catalog')
-    if (saved) return JSON.parse(saved)
-  } catch {}
-  return catalogData.products
+// ─── SUPABASE CRUD ───────────────────────────────────────────────
+async function fetchProducts() {
+  const { data, error } = await supabase.from('products').select('*').order('id')
+  if (error) { console.error('Mahsulotlar yuklanmadi:', error); return [] }
+  return data
 }
 
-function saveCatalog(products) {
-  localStorage.setItem('fratino_catalog', JSON.stringify(products))
-  // Bir xil tabda ham Catalog.jsx ni xabardor qilish
-  window.dispatchEvent(new CustomEvent('fratino_catalog_updated'))
+async function upsertProduct(product) {
+  const { data, error } = await supabase
+    .from('products')
+    .upsert(product, { onConflict: 'id' })
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+async function deleteProduct(id) {
+  const { error } = await supabase.from('products').delete().eq('id', id)
+  if (error) throw error
 }
 
 // ─── MAHSULOT MODAL ──────────────────────────────────────────────
-function ProductModal({ product, onSave, onClose }) {
+function ProductModal({ product, onSave, onClose, categories }) {
   const [form, setForm] = useState({
     name:      product?.name      || '',
     type:      product?.type      || '',
     desc:      product?.desc      || '',
     price:     product?.price     || '',
-    category:  product?.category  || 'buket',
+    category:  product?.category  || (categories[0]?.id || 'buket'),
     imgClass:  product?.imgClass  || 'atirgul',
     badge:     product?.badge     || '',
     imageUrl:  product?.imageUrl  || '',
     stock:     product?.stock     ?? true,
   })
 
+  // Yangi kategoriya qo'shish
+  const [newCatMode, setNewCatMode] = useState(false)
+  const [newCatLabel, setNewCatLabel] = useState('')
+  // Yangi filter qo'shish
+  const [newFilterMode, setNewFilterMode] = useState(false)
+  const [newFilterVal, setNewFilterVal] = useState('')
+
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }))
+
+  const activeCat = categories.find(c => c.id === form.category)
+  const filters = (activeCat?.filters || []).filter(f => f !== 'Barchasi')
+
+  const handleAddCategory = async () => {
+    const label = newCatLabel.trim()
+    if (!label) return
+    const id = label.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')
+    const { error } = await supabase.from('categories').insert({ id, label, filters: ['Barchasi'] })
+    if (error) { alert('Xato: ' + error.message); return }
+    setNewCatMode(false)
+    setNewCatLabel('')
+    set('category', id)
+    window.dispatchEvent(new CustomEvent('categories_updated'))
+  }
+
+  const handleAddFilter = async () => {
+    const val = newFilterVal.trim()
+    if (!val || !activeCat) return
+    const updated = [...(activeCat.filters || ['Barchasi']), val]
+    const { error } = await supabase.from('categories').update({ filters: updated }).eq('id', activeCat.id)
+    if (error) { alert('Xato: ' + error.message); return }
+    setNewFilterMode(false)
+    setNewFilterVal('')
+    set('type', val)
+    window.dispatchEvent(new CustomEvent('categories_updated'))
+  }
 
   const handleSave = () => {
     if (!form.name.trim() || !form.price) {
@@ -75,7 +116,7 @@ function ProductModal({ product, onSave, onClose }) {
     background: 'var(--white)',
     borderRadius: 20,
     padding: '1.75rem',
-    width: 420,
+    width: 460,
     maxWidth: '100%',
     maxHeight: '90vh',
     overflowY: 'auto',
@@ -93,10 +134,20 @@ function ProductModal({ product, onSave, onClose }) {
     fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
   }
   const selectStyle = { ...inputStyle, cursor: 'pointer' }
+  const chipBase = {
+    padding: '7px 13px', borderRadius: 20, cursor: 'pointer',
+    fontSize: '0.8rem', fontWeight: 600, border: '1.5px solid var(--cream-dark)',
+    background: 'var(--white)', color: 'var(--text-muted)',
+    transition: 'all .15s', fontFamily: 'inherit',
+  }
+  const chipActive = {
+    ...chipBase,
+    background: 'var(--pink)', color: '#fff', border: '1.5px solid var(--pink)',
+  }
 
   return (
-    <div style={overlayStyle} onClick={onClose}>
-      <div style={modalStyle} onClick={e => e.stopPropagation()}>
+    <div className="admin-modal-overlay" onClick={onClose}>
+      <div className="admin-modal-box" onClick={e => e.stopPropagation()}>
         <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '1.1rem', fontWeight: 600, color: 'var(--text)', marginBottom: '1.25rem' }}>
           {product ? 'Mahsulotni tahrirlash' : 'Yangi mahsulot'}
         </h3>
@@ -107,10 +158,80 @@ function ProductModal({ product, onSave, onClose }) {
           <input style={inputStyle} placeholder="Masalan: Atirgul buketi" value={form.name} onChange={e => set('name', e.target.value)} />
         </div>
 
-        {/* Turi */}
+        {/* Kategoriya — chip tugmalar */}
         <div style={fieldStyle}>
-          <label style={labelStyle}>TURI (karta ustida rangli chiqadi)</label>
-          <input style={inputStyle} placeholder="Masalan: Premium, Klassik, Bahorgi..." value={form.type} onChange={e => set('type', e.target.value)} />
+          <label style={labelStyle}>KATEGORIYA</label>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
+            {categories.map(c => (
+              <button key={c.id} type="button"
+                style={form.category === c.id ? chipActive : chipBase}
+                onClick={() => { set('category', c.id); set('type', '') }}
+              >{c.label}</button>
+            ))}
+            {newCatMode ? (
+              <div style={{ display: 'flex', gap: 6, width: '100%', marginTop: 4 }}>
+                <input
+                  style={{ ...inputStyle, flex: 1 }}
+                  placeholder="Kategoriya nomi (masalan: Sovg'a)"
+                  value={newCatLabel}
+                  onChange={e => setNewCatLabel(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleAddCategory()}
+                  autoFocus
+                />
+                <button type="button" onClick={handleAddCategory}
+                  style={{ padding: '8px 14px', borderRadius: 11, background: 'var(--pink)', color: '#fff', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+                  Qo'sh
+                </button>
+                <button type="button" onClick={() => setNewCatMode(false)}
+                  style={{ padding: '8px 12px', borderRadius: 11, background: 'transparent', border: '1.5px solid var(--cream-dark)', cursor: 'pointer', color: 'var(--text-muted)', fontFamily: 'inherit' }}>
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <button type="button" onClick={() => setNewCatMode(true)}
+                style={{ ...chipBase, border: '1.5px dashed var(--cream-dark)', color: 'var(--pink)' }}>
+                + Yangi
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Turi / Filter — chip tugmalar */}
+        <div style={fieldStyle}>
+          <label style={labelStyle}>TURI (katalog filtri)</label>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
+            {filters.map(f => (
+              <button key={f} type="button"
+                style={form.type === f ? chipActive : chipBase}
+                onClick={() => set('type', f)}
+              >{f}</button>
+            ))}
+            {newFilterMode ? (
+              <div style={{ display: 'flex', gap: 6, width: '100%', marginTop: 4 }}>
+                <input
+                  style={{ ...inputStyle, flex: 1 }}
+                  placeholder="Yangi filter (masalan: Bahorgi)"
+                  value={newFilterVal}
+                  onChange={e => setNewFilterVal(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleAddFilter()}
+                  autoFocus
+                />
+                <button type="button" onClick={handleAddFilter}
+                  style={{ padding: '8px 14px', borderRadius: 11, background: 'var(--pink)', color: '#fff', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 600 }}>
+                  Qo'sh
+                </button>
+                <button type="button" onClick={() => setNewFilterMode(false)}
+                  style={{ padding: '8px 12px', borderRadius: 11, background: 'transparent', border: '1.5px solid var(--cream-dark)', cursor: 'pointer', color: 'var(--text-muted)', fontFamily: 'inherit' }}>
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <button type="button" onClick={() => setNewFilterMode(true)}
+                style={{ ...chipBase, border: '1.5px dashed var(--cream-dark)', color: 'var(--pink)' }}>
+                + Yangi
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Tavsif */}
@@ -130,18 +251,10 @@ function ProductModal({ product, onSave, onClose }) {
           <input style={inputStyle} type="number" placeholder="120000" value={form.price} onChange={e => set('price', e.target.value)} />
         </div>
 
-        {/* Kategoriya */}
-        <div style={fieldStyle}>
-          <label style={labelStyle}>KATEGORIYA</label>
-          <select style={selectStyle} value={form.category} onChange={e => set('category', e.target.value)}>
-            {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
-          </select>
-        </div>
-
         {/* Karta rangi */}
         <div style={fieldStyle}>
           <label style={labelStyle}>KARTA RANGI</label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
+          <div className="admin-imgclass-grid">
             {IMG_CLASSES.map(c => {
               const COLORS = {
                 lola: '#EFF6FF', atirgul: '#FFF1F2', pion: '#FAF5FF',
@@ -202,7 +315,7 @@ function ProductModal({ product, onSave, onClose }) {
               <img
                 src={form.imageUrl}
                 alt="preview"
-                style={{ width: '100%', height: 130, objectFit: 'cover', borderRadius: 12, border: '1.5px solid var(--cream-dark)', display: 'block' }}
+                style={{ width: '100%', height: 130, objectFit: 'contain', borderRadius: 12, border: '1.5px solid var(--cream-dark)', display: 'block', background: 'var(--cream)' }}
                 onError={e => e.target.style.display = 'none'}
               />
               <button
@@ -315,28 +428,30 @@ function Sidebar({ active, onNav }) {
       ), label: 'Ism yozish' },
   ]
   return (
-    <aside style={{ width: 210, flexShrink: 0, background: 'var(--white)', borderRight: '1px solid var(--cream-dark)', padding: '1.5rem 0' }}>
+    <aside className="admin-sidebar">
       <div style={{ padding: '0 1.25rem 1.25rem', borderBottom: '1px solid var(--cream-dark)', marginBottom: '0.75rem' }}>
         <div style={{ fontSize: '1rem', fontFamily: 'Montserrat, sans-serif', fontWeight: 700, color: 'var(--text)' }}>✿ Gala Flowers</div>
         <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.08em', marginTop: 2 }}>ADMIN PANEL</div>
       </div>
-      {links.map(l => (
-        <div
-          key={l.key}
-          onClick={() => onNav(l.key)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            padding: '11px 1.25rem', fontSize: '0.88rem', cursor: 'pointer',
-            color: active === l.key ? 'var(--pink)' : 'var(--text-muted)',
-            fontWeight: active === l.key ? 600 : 400,
-            background: active === l.key ? 'var(--pink-pale)' : 'transparent',
-            borderLeft: `3px solid ${active === l.key ? 'var(--pink)' : 'transparent'}`,
-            transition: 'all .15s',
-          }}
-        >
-          <span style={{ display:'flex', alignItems:'center' }}>{l.icon}</span> {l.label}
-        </div>
-      ))}
+      <div className="admin-sidebar-nav">
+        {links.map(l => (
+          <div
+            key={l.key}
+            className={`admin-sidebar-link${active === l.key ? ' active' : ''}`}
+            onClick={() => onNav(l.key)}
+            style={{
+              fontSize: '0.88rem', cursor: 'pointer',
+              color: active === l.key ? 'var(--pink)' : 'var(--text-muted)',
+              fontWeight: active === l.key ? 600 : 400,
+              background: active === l.key ? 'var(--pink-pale)' : 'transparent',
+              borderLeft: `3px solid ${active === l.key ? 'var(--pink)' : 'transparent'}`,
+              transition: 'all .15s',
+            }}
+          >
+            <span style={{ display:'flex', alignItems:'center' }}>{l.icon}</span> {l.label}
+          </div>
+        ))}
+      </div>
     </aside>
   )
 }
@@ -345,8 +460,26 @@ function Sidebar({ active, onNav }) {
 function OrdersPage({ orders }) {
   const [q, setQ] = useState('')
   const filtered = orders.filter(o =>
-    !q || o.name.toLowerCase().includes(q.toLowerCase()) || String(o.id).includes(q)
+    !q ||
+    (o.customer_name || '').toLowerCase().includes(q.toLowerCase()) ||
+    String(o.order_number).includes(q) ||
+    String(o.id).includes(q)
   )
+
+  function statusColor(s) {
+    if (s === 'new')       return { bg: '#EFF6FF', color: '#3B82F6' }
+    if (s === 'confirmed') return { bg: '#ECFDF5', color: '#10B981' }
+    if (s === 'done')      return { bg: '#F0FDF4', color: '#6a9e5a' }
+    if (s === 'cancelled') return { bg: '#FFF1F2', color: '#e05c6a' }
+    return { bg: 'var(--cream)', color: 'var(--text-muted)' }
+  }
+  function statusLabel(s) {
+    if (s === 'new')       return 'Yangi'
+    if (s === 'confirmed') return 'Tasdiqlangan'
+    if (s === 'done')      return 'Bajarildi'
+    if (s === 'cancelled') return 'Bekor'
+    return s || 'Yangi'
+  }
 
   return (
     <div>
@@ -358,29 +491,51 @@ function OrdersPage({ orders }) {
       <div style={{ marginBottom: '1rem' }}>
         <input
           value={q} onChange={e => setQ(e.target.value)}
-          placeholder="Mijoz nomi yoki buyurtma ID..."
+          placeholder="Mijoz nomi yoki buyurtma raqami..."
           style={{ width: '100%', padding: '10px 14px', borderRadius: 12, border: '1.5px solid var(--cream-dark)', fontSize: '0.88rem', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', background: 'var(--white)' }}
         />
       </div>
 
       <div style={{ background: 'var(--white)', borderRadius: 18, border: '1px solid var(--cream-dark)', overflow: 'hidden' }}>
         {filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>Buyurtma topilmadi</div>
-        ) : filtered.map((o, i) => (
-          <div key={o.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 1.25rem', borderBottom: i < filtered.length - 1 ? '1px solid var(--cream-dark)' : 'none' }}>
-            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
-              {o.emoji}
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text)' }}>{o.name}</div>
-              <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: 1 }}>#{o.id} · {o.product} · {o.qty} dona</div>
-            </div>
-            <div style={{ textAlign: 'right', flexShrink: 0 }}>
-              <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text)' }}>{fmt(o.price)}</div>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 1 }}>+998 {o.phone}</div>
-            </div>
+          <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--text-muted)' }}>
+            {orders.length === 0 ? 'Hali buyurtma yo\'q' : 'Buyurtma topilmadi'}
           </div>
-        ))}
+        ) : filtered.map((o, i) => {
+          const items = Array.isArray(o.items) ? o.items : []
+          const firstItem = items[0]
+          const sc = statusColor(o.status)
+          const date = o.created_at ? new Date(o.created_at) : null
+          const dateStr = date ? date.toLocaleDateString('uz-UZ', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : ''
+          return (
+            <div key={o.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid var(--cream-dark)' : 'none' }}>
+              <div className="order-row">
+                {/* Emoji */}
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>
+                  {firstItem?.emoji || '🌸'}
+                </div>
+                {/* Info */}
+                <div className="order-row-info">
+                  <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text)' }}>{o.customer_name}</div>
+                  <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: 1, display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+                    <span>#{o.order_number || o.id}</span>
+                    <span>·</span>
+                    <span>{items.map(it => `${it.name} ×${it.qty}`).join(', ')}</span>
+                    {dateStr && <><span>·</span><span>{dateStr}</span></>}
+                  </div>
+                </div>
+                {/* Status + narx */}
+                <div className="order-row-right" style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text)', marginBottom: 3 }}>{fmt(o.total_price)}</div>
+                  <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.68rem', padding: '2px 8px', borderRadius: 8, fontWeight: 600, background: sc.bg, color: sc.color }}>{statusLabel(o.status)}</span>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>+998 {o.phone}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
@@ -388,18 +543,29 @@ function OrdersPage({ orders }) {
 
 // ─── STATS PAGE ──────────────────────────────────────────────────
 function StatsPage({ orders, products }) {
-  const total = orders.reduce((s, o) => s + o.price, 0)
+  const total = orders.reduce((s, o) => s + (o.total_price || 0), 0)
+  const totalQty = orders.reduce((s, o) => s + (o.total_qty || 0), 0)
   const dayLabels = ['Ya', 'Du', 'Se', 'Ch', 'Pa', 'Sh', 'Ya']
   const now = new Date()
   const dayTotals = Array(7).fill(0)
-  orders.forEach(o => { dayTotals[6 - o.dayOffset] += o.price })
+
+  orders.forEach(o => {
+    if (!o.created_at) return
+    const d = new Date(o.created_at)
+    const diffMs = now - d
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    if (diffDays >= 0 && diffDays < 7) {
+      dayTotals[6 - diffDays] += (o.total_price || 0)
+    }
+  })
+
   const maxVal = Math.max(...dayTotals, 1)
 
   const metrics = [
-    { label: 'Jami daromad',    val: fmt(total),       sub: 'Oxirgi 7 kun'    },
-    { label: 'Buyurtmalar',     val: orders.length,    sub: 'Jami'            },
-    { label: 'Mahsulotlar',     val: products.length,  sub: 'Katalogda'       },
-    { label: "O'rtacha chek",   val: fmt(total / (orders.length || 1)), sub: 'Buyurtma boshiga' },
+    { label: 'Jami daromad',      val: fmt(total),      sub: 'Barcha vaqt'         },
+    { label: 'Buyurtmalar',       val: orders.length,   sub: 'Jami'                },
+    { label: 'Sotilgan gullar',   val: totalQty + ' ta', sub: 'Jami dona/buket'    },
+    { label: "O'rtacha chek",     val: fmt(total / (orders.length || 1)), sub: 'Buyurtma boshiga' },
   ]
 
   return (
@@ -529,7 +695,7 @@ function HarfAdminPage() {
 
   return (
     <div>
-      <div style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+      <div className="admin-page-header">
         <div>
           <p style={{ fontSize: '0.7rem', letterSpacing: '0.16em', color: 'var(--pink)', fontWeight: 600, marginBottom: 4 }}>ADMIN PANEL</p>
           <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '1.6rem', fontWeight: 700, color: 'var(--text)' }}>Ism yozish narxlari</h2>
@@ -545,7 +711,7 @@ function HarfAdminPage() {
       {/* Harf paketlari */}
       <div style={{ background: 'var(--white)', borderRadius: 18, border: '1px solid var(--cream-dark)', padding: '1.5rem', marginBottom: '1.5rem' }}>
         <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: '1.1rem' }}>ISM / HARF YOZISH — ASOSIY PAKETLAR</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <div className="harf-pkg-grid">
           {pkgs.map((pkg, i) => (
             <div key={pkg.id} style={{ background: 'var(--cream)', borderRadius: 14, padding: '1.1rem' }}>
               <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--pink)', marginBottom: '0.75rem', letterSpacing: '0.06em' }}>
@@ -650,7 +816,7 @@ function HarfAdminPage() {
       {/* Ism uzunligi koeffitsientlari — tahrirlanadigan */}
       <div style={{ background: 'var(--white)', borderRadius: 18, border: '1px solid var(--cream-dark)', padding: '1.5rem', marginBottom: '1.5rem' }}>
         <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '0.08em', marginBottom: '1.1rem' }}>ISM YOZISH — UZUNLIK KOEFFITSIENTLARI</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <div className="harf-mult-grid">
           {mults.map((m, i) => (
             <div key={m.id} style={{ background: 'var(--cream)', borderRadius: 14, padding: '1.1rem' }}>
               <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--pink)', marginBottom: '0.75rem', letterSpacing: '0.06em' }}>
@@ -743,7 +909,7 @@ function ProductsPage({ products, onAdd, onEdit, onDelete }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+      <div className="admin-page-header" style={{ marginBottom: '1.25rem' }}>
         <div>
           <p style={{ fontSize: '0.7rem', letterSpacing: '0.16em', color: 'var(--pink)', fontWeight: 600, marginBottom: 4 }}>ADMIN PANEL</p>
           <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '1.6rem', fontWeight: 700, color: 'var(--text)' }}>Mahsulotlar</h2>
@@ -783,8 +949,7 @@ function ProductsPage({ products, onAdd, onEdit, onDelete }) {
           const colors = CAT_COLORS[p.imgClass] || { bg: '#FFF1F2', stroke: '#F43F5E' }
           const catLabel = CATEGORIES.find(c => c.id === p.category)?.label || p.category
           return (
-            <div key={p.id} style={{
-              display: 'flex', alignItems: 'center', gap: 12, padding: '13px 1.25rem',
+            <div key={p.id} className="product-row" style={{
               borderBottom: i < visible.length - 1 ? '1px solid var(--cream-dark)' : 'none',
             }}>
               {/* Rang ko'rsatgich */}
@@ -794,7 +959,7 @@ function ProductsPage({ products, onAdd, onEdit, onDelete }) {
                   : <span style={{ fontSize: '0.72rem', fontWeight: 700, color: colors.stroke }}>{p.imgClass?.slice(0,3).toUpperCase()}</span>
                 }
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="product-row-info">
                 <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)' }}>{p.name}</div>
                 <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: 2, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <span style={{ background: colors.bg, color: colors.stroke, padding: '1px 7px', borderRadius: 10, fontWeight: 600 }}>{p.type || '—'}</span>
@@ -803,28 +968,30 @@ function ProductsPage({ products, onAdd, onEdit, onDelete }) {
                   <span style={{ color: p.stock ? '#6a9e5a' : '#e05c6a', fontWeight: 600 }}>{p.stock ? '✓ Mavjud' : '✗ Tugagan'}</span>
                 </div>
               </div>
-              <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)', flexShrink: 0, minWidth: 100, textAlign: 'right' }}>
-                {fmt(p.price)}
-              </div>
-              <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                <button
-                  onClick={() => onEdit(p)}
-                  style={{ padding: '7px 11px', borderRadius: 10, border: '1.5px solid var(--cream-dark)', background: 'var(--white)', cursor: 'pointer', fontSize: '0.82rem', color: 'var(--text-muted)', fontFamily: 'inherit' }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                  </svg>
-                </button>
-                <button
-                  onClick={() => onDelete(p.id)}
-                  style={{ padding: '7px 11px', borderRadius: 10, border: '1.5px solid var(--cream-dark)', background: 'var(--white)', cursor: 'pointer', fontSize: '0.82rem', color: '#e05c6a', fontFamily: 'inherit' }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
-                    <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
-                  </svg>
-                </button>
+              <div className="product-row-right">
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)', flexShrink: 0, minWidth: 90, textAlign: 'right' }}>
+                  {fmt(p.price)}
+                </div>
+                <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                  <button
+                    onClick={() => onEdit(p)}
+                    style={{ padding: '7px 11px', borderRadius: 10, border: '1.5px solid var(--cream-dark)', background: 'var(--white)', cursor: 'pointer', fontSize: '0.82rem', color: 'var(--text-muted)', fontFamily: 'inherit' }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => onDelete(p.id)}
+                    style={{ padding: '7px 11px', borderRadius: 10, border: '1.5px solid var(--cream-dark)', background: 'var(--white)', cursor: 'pointer', fontSize: '0.82rem', color: '#e05c6a', fontFamily: 'inherit' }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+                      <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           )
@@ -855,59 +1022,134 @@ function genDemoOrders(prods) {
   }).sort((a, b) => a.dayOffset - b.dayOffset)
 }
 
+// ─── RESPONSIVE STYLES (1200px → 320px) ───────────────────────────
+const ADMIN_RESPONSIVE_CSS = `
+  .admin-root { display: flex; min-height: calc(100vh - 130px); background: var(--cream); }
+  .admin-sidebar { width: 210px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--cream-dark); padding: 1.5rem 0; }
+  .admin-sidebar-link { display: flex; align-items: center; gap: 10px; padding: 11px 1.25rem; }
+  .admin-main { flex: 1; padding: 2rem; overflow: auto; min-width: 0; }
+  .admin-page-header { margin-bottom: 1.5rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .admin-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  .admin-modal-box { background: var(--white); border-radius: 20px; padding: 1.75rem; width: 460px; max-width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,0.18); }
+  .admin-imgclass-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .harf-pkg-grid, .harf-mult-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .order-row, .product-row { display: flex; align-items: center; gap: 12px; padding: 13px 1.25rem; flex-wrap: wrap; }
+  .order-row-info, .product-row-info { flex: 1; min-width: 0; }
+  .order-row-right, .product-row-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+  @media (max-width: 1200px) {
+    .admin-main { padding: 1.5rem; }
+  }
+
+  @media (max-width: 900px) {
+    .admin-root { flex-direction: column; min-height: auto; }
+    .admin-sidebar { width: 100%; padding: 0.5rem 0; border-right: none; border-bottom: 1px solid var(--cream-dark); display: flex; flex-direction: column; }
+    .admin-sidebar > div:first-child { display: none; }
+    .admin-sidebar-nav { display: flex; overflow-x: auto; gap: 4px; padding: 0 0.5rem; }
+    .admin-sidebar-link { flex-direction: column; gap: 4px !important; padding: 8px 14px !important; font-size: 0.7rem !important; white-space: nowrap; border-left: none !important; border-bottom: 3px solid transparent; flex-shrink: 0; }
+    .admin-sidebar-link.active { border-bottom: 3px solid var(--pink) !important; }
+    .admin-main { padding: 1.25rem; }
+    .harf-pkg-grid, .harf-mult-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 640px) {
+    .admin-main { padding: 1rem; }
+    .admin-modal-box { padding: 1.25rem; border-radius: 16px; }
+    .admin-imgclass-grid { grid-template-columns: repeat(3, 1fr); }
+    .harf-pkg-grid, .harf-mult-grid { grid-template-columns: 1fr; }
+    .order-row, .product-row { padding: 12px 0.85rem; }
+    .order-row-right, .product-row-right { margin-left: 52px; width: calc(100% - 52px); justify-content: space-between; }
+  }
+
+  @media (max-width: 480px) {
+    .admin-main { padding: 0.75rem; }
+    .admin-page-header h2 { font-size: 1.3rem !important; }
+    .admin-imgclass-grid { grid-template-columns: repeat(2, 1fr); }
+    .product-row-right, .order-row-right { margin-left: 0; width: 100%; }
+  }
+
+  @media (max-width: 360px) {
+    .admin-sidebar-link { padding: 7px 10px !important; font-size: 0.65rem !important; }
+    .admin-modal-box { padding: 1rem; }
+  }
+`
+
+function ResponsiveStyles() {
+  return <style>{ADMIN_RESPONSIVE_CSS}</style>
+}
+
 // ─── ADMIN PAGE ROOT ─────────────────────────────────────────────
 export default function Admin() {
   const [page, setPage] = useState('orders')
 
-  // catalog.json dan boshlang'ich holat, localStorage dan o'qib updated versiya
-  const [products, setProducts] = useState(() => loadCatalog())
-  const [nextId, setNextId] = useState(() => {
-    const all = loadCatalog()
-    return Math.max(...all.map(p => Number(p.id) || 0), 0) + 1
-  })
-  const [orders] = useState(() => genDemoOrders(loadCatalog()))
+  const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [orders, setOrders] = useState([])
   const [modal, setModal] = useState(null)
   const [savedTip, setSavedTip] = useState(false)
 
-  // Har safar products o'zgarganda localStorage ga yoz
+  // Supabase dan ma'lumotlarni yuklash
   useEffect(() => {
-    saveCatalog(products)
-  }, [products])
-
-  const handleSave = (data) => {
-    if (modal && modal !== 'add') {
-      // Tahrirlash
-      setProducts(ps => ps.map(p => p.id === modal.id ? { ...p, ...data } : p))
-    } else {
-      // Yangi mahsulot — catalog.json formatiga mos id yaratish
-      const newId = `admin_${nextId}`
-      setProducts(ps => [...ps, { ...data, id: newId, emoji: '🌸' }])
-      setNextId(n => n + 1)
+    async function loadAll() {
+      const [prods, cats, ordersRes] = await Promise.all([
+        fetchProducts(),
+        supabase.from('categories').select('*').then(r => r.data || []),
+        supabase.from('orders').select('*').order('created_at', { ascending: false }),
+      ])
+      setProducts(prods)
+      setCategories(cats)
+      setOrders(ordersRes.data || [])
+      setLoading(false)
     }
-    setModal(null)
-    setSavedTip(true)
-    setTimeout(() => setSavedTip(false), 3000)
+    loadAll()
+
+    // Kategoriya yangilanganda qayta yuklash
+    const onCatUpdate = () => {
+      supabase.from('categories').select('*').then(r => setCategories(r.data || []))
+    }
+    window.addEventListener('categories_updated', onCatUpdate)
+    return () => window.removeEventListener('categories_updated', onCatUpdate)
+  }, [])
+
+  const handleSave = async (data) => {
+    try {
+      if (modal && modal !== 'add') {
+        // Tahrirlash
+        const updated = await upsertProduct({ ...modal, ...data })
+        setProducts(ps => ps.map(p => p.id === updated.id ? updated : p))
+      } else {
+        // Yangi mahsulot — id yo'q, Supabase o'zi beradi
+        const { id: _skip, ...rest } = data
+        const created = await upsertProduct({ ...rest, emoji: '🌸' })
+        setProducts(ps => [created, ...ps])
+      }
+      setModal(null)
+      setSavedTip(true)
+      setTimeout(() => setSavedTip(false), 3000)
+    } catch (err) {
+      alert('Xato: ' + err.message)
+    }
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!window.confirm("Mahsulotni o'chirishni tasdiqlaysizmi?")) return
-    setProducts(ps => ps.filter(p => p.id !== id))
-    setSavedTip(true)
-    setTimeout(() => setSavedTip(false), 2000)
-  }
-
-  const handleReset = () => {
-    if (!window.confirm("Barcha o'zgarishlarni bekor qilib, catalog.json ga qaytarilsinmi?")) return
-    localStorage.removeItem('fratino_catalog')
-    setProducts(catalogData.products)
-    setNextId(Math.max(...catalogData.products.map(p => Number(p.id) || 0), 0) + 1)
+    try {
+      await deleteProduct(id)
+      setProducts(ps => ps.filter(p => p.id !== id))
+      setSavedTip(true)
+      setTimeout(() => setSavedTip(false), 2000)
+    } catch (err) {
+      alert('O\'chirishda xato: ' + err.message)
+    }
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: 'calc(100vh - 130px)', background: 'var(--cream)' }}>
+    <div className="admin-root">
+      <ResponsiveStyles />
       <Sidebar active={page} onNav={setPage} />
 
-      <main style={{ flex: 1, padding: '2rem', overflow: 'auto' }}>
+      <main className="admin-main">
         {/* Saqlandi bildirishnomasi */}
         {savedTip && (
           <div style={{
@@ -922,24 +1164,23 @@ export default function Admin() {
           </div>
         )}
 
-        {page === 'orders'   && <OrdersPage orders={orders} />}
-        {page === 'stats'    && <StatsPage orders={orders} products={products} />}
-        {page === 'harf'     && <HarfAdminPage />}
-        {page === 'products' && (
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
+            Yuklanmoqda...
+          </div>
+        ) : (
           <>
-            <ProductsPage
-              products={products}
-              onAdd={() => setModal('add')}
-              onEdit={p => setModal(p)}
-              onDelete={handleDelete}
-            />
-            {/* Reset tugmasi */}
-            <div style={{ marginTop: '1.5rem', textAlign: 'right' }}>
-              <button
-                onClick={handleReset}
-                style={{ padding: '8px 16px', borderRadius: 12, border: '1.5px solid var(--cream-dark)', background: 'transparent', fontSize: '0.78rem', color: 'var(--text-muted)', cursor: 'pointer', fontFamily: 'inherit' }}
-              >↺ Asl katalogga qaytarish</button>
-            </div>
+            {page === 'orders'   && <OrdersPage orders={orders} />}
+            {page === 'stats'    && <StatsPage orders={orders} products={products} />}
+            {page === 'harf'     && <HarfAdminPage />}
+            {page === 'products' && (
+              <ProductsPage
+                products={products}
+                onAdd={() => setModal('add')}
+                onEdit={p => setModal(p)}
+                onDelete={handleDelete}
+              />
+            )}
           </>
         )}
       </main>
@@ -949,6 +1190,7 @@ export default function Admin() {
           product={modal === 'add' ? null : modal}
           onSave={handleSave}
           onClose={() => setModal(null)}
+          categories={categories}
         />
       )}
     </div>

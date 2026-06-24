@@ -411,40 +411,155 @@
   }
 }
 /* ═══════════════════════════════════════════════════════
-   CONTACT EXTRA RESPONSIVE
+   CONTACT RESPONSIVE — 400px
 ═══════════════════════════════════════════════════════ */
-@media (max-width: 600px) {
-  .contact-page-title {
-    font-size: 2rem;
+@media (max-width: 400px) {
+  .contact-intro {
+    padding: 2rem 0.75rem 1.5rem;
   }
 
-  .contact-intro {
-    padding: 2.5rem 1rem 2rem;
+  .contact-page-title {
+    font-size: 1.75rem;
   }
 
   .contact-info-section {
-    padding: 1.5rem 1rem;
+    padding: 1.25rem 0.75rem;
   }
 
-  .contact-social-section {
-    padding: 0 1rem 2rem;
+  .contact-info-grid {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
   }
 
-  .contact-faq-section {
-    padding: 3rem 1rem 4rem;
-  }
-
-  .contact-social {
-    padding: 1.2rem 1.2rem;
+  .contact-card {
+    padding: 1.1rem;
     border-radius: 14px;
   }
 
+  .contact-social-section {
+    padding: 0 0.75rem 1.5rem;
+  }
+
+  .contact-social {
+    padding: 1rem;
+    border-radius: 12px;
+    gap: 0.75rem;
+  }
+
   .contact-social-links {
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
 
   .contact-social-btn {
+    font-size: 0.74rem;
+    padding: 0.38rem 0.8rem 0.38rem 0.38rem;
+  }
+
+  .contact-social-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .contact-faq-section {
+    padding: 2.5rem 0.75rem 3rem;
+  }
+
+  .contact-faq-question {
+    font-size: 0.85rem;
+    padding: 1rem 0;
+  }
+
+  .contact-faq-answer {
+    font-size: 0.8rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CONTACT RESPONSIVE — 320px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 320px) {
+  .contact-intro {
+    padding: 1.5rem 0.65rem 1.25rem;
+  }
+
+  .contact-page-title {
+    font-size: 1.5rem;
+  }
+
+  .contact-eyebrow {
+    font-size: 0.65rem;
+  }
+
+  .contact-intro-sub {
     font-size: 0.78rem;
-    padding: 0.4rem 0.9rem 0.4rem 0.4rem;
+  }
+
+  .contact-info-section {
+    padding: 1rem 0.65rem;
+  }
+
+  .contact-card {
+    padding: 0.9rem;
+    border-radius: 12px;
+  }
+
+  .contact-card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    margin-bottom: 0.65rem;
+  }
+
+  .contact-card-line {
+    font-size: 0.82rem;
+  }
+
+  .contact-card-note {
+    font-size: 0.68rem;
+  }
+
+  .contact-social-section {
+    padding: 0 0.65rem 1.25rem;
+  }
+
+  .contact-social {
+    padding: 0.85rem;
+    border-radius: 10px;
+  }
+
+  .contact-social-label {
+    font-size: 0.78rem;
+  }
+
+  .contact-social-btn {
+    font-size: 0.68rem;
+    padding: 0.32rem 0.7rem 0.32rem 0.32rem;
+  }
+
+  .contact-social-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .contact-faq-section {
+    padding: 2rem 0.65rem 2.5rem;
+  }
+
+  .contact-faq-sidebar-title {
+    font-size: 1.4rem;
+  }
+
+  .contact-faq-sidebar-desc {
+    font-size: 0.78rem;
+  }
+
+  .contact-faq-question {
+    font-size: 0.8rem;
+    padding: 0.85rem 0;
+  }
+
+  .contact-faq-answer {
+    font-size: 0.75rem;
+    padding-bottom: 1rem;
   }
 }

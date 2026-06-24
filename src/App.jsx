@@ -1,8 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
-import Gallery from './pages/Gallery'
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
-import data from './data/flowers.json'
-import catalogData from './data/catalog.json'
+import { useSupabaseData } from './hooks/useSupabaseData'
 import Footer from './components/Footer'
 import Catalog from './pages/Catalog'
 import Contact from './pages/Contact'
@@ -55,7 +53,6 @@ function Navbar({ likedCount, cartCount }) {
   const navLinks = [
     { to: '/',         label: 'Bosh sahifa' },
     { to: '/catalog',  label: 'Gullar'      },
-    { to: '/gallery',  label: 'Gallereya'   },
     { to: '/contact',  label: 'Aloqa'       },
   ]
 
@@ -171,7 +168,7 @@ function Navbar({ likedCount, cartCount }) {
 }
 
 // ─── HOME PAGE ───────────────────────────────────────────────────
-function Hero() {
+function Hero({ data }) {
   const { hero } = data
   const lines = hero.title.split('\n')
   return (
@@ -199,8 +196,9 @@ function Hero() {
     </section>
   )
 }
+<br/> 
 
-function Collections() {
+function Collections({ data }) {
   const { collections } = data
   return (
     <section className="collections-section">
@@ -348,7 +346,7 @@ function HomeProductModal({ product, onClose, onAdd }) {
 }
 
 // ─── PRODUCTS (catalog.json dan) ─────────────────────────────────
-function Products({ onAddToCart }) {
+function Products({ onAddToCart, catalogData }) {
   const { products: catalogProducts } = catalogData
   const [startIdx, setStartIdx] = useState(0)
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -422,7 +420,7 @@ function Products({ onAddToCart }) {
   )
 }
 
-function HowItWorks() {
+function HowItWorks({ data }) {
   const { steps } = data
   return (
     <section className="hiw-section">
@@ -450,13 +448,14 @@ function HowItWorks() {
   )
 }
 
-function HomePage({ onAddToCart }) {
+function HomePage({ onAddToCart, homeData, homeCatalogData, homeLoading }) {
+  if (homeLoading) return <div style={{textAlign:'center', padding:'4rem'}}>Yuklanmoqda...</div>
   return (
     <main>
-      <Hero />
-      <Collections />
-      <Products onAddToCart={onAddToCart} />
-      <HowItWorks />
+      <Hero data={homeData} />
+      <Collections data={homeData} />
+      <Products onAddToCart={onAddToCart} catalogData={homeCatalogData} />
+      <HowItWorks data={homeData} />
     </main>
   )
 }
@@ -465,16 +464,16 @@ function HomePage({ onAddToCart }) {
 function AppLayout() {
   const { likedIds, toggleLike } = useLiked()
   const { cartItems, addToCart, removeFromCart, updateQty, clearCart, cartCount } = useCart()
+  const { data: homeData, catalogData: homeCatalogData, loading: homeLoading } = useSupabaseData()
 
   return (
     <div className="app">
       <Navbar likedCount={likedIds.length} cartCount={cartCount} />
       <Routes>
-        <Route path="/"        element={<HomePage onAddToCart={addToCart} />} />
+        <Route path="/"        element={<HomePage onAddToCart={addToCart} homeData={homeData} homeCatalogData={homeCatalogData} homeLoading={homeLoading} />} />
         <Route path="/catalog" element={<Catalog likedIds={likedIds} onToggleLike={toggleLike} onAddToCart={addToCart} />} />
-        <Route path="/gallery" element={<Gallery />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/liked"   element={<Liked likedIds={likedIds} onUnlike={toggleLike} />} />
+        <Route path="/liked"   element={<Liked likedIds={likedIds} onUnlike={toggleLike} onAddToCart={addToCart} />} />
         <Route path="/cart"     element={<Cart cartItems={cartItems} onRemove={removeFromCart} onUpdateQty={updateQty} onClearCart={clearCart} />} />
         <Route path="/checkout" element={<Checkout cartItems={cartItems} onClearCart={clearCart} />} />
         <Route path="/admin"    element={<Admin />} />

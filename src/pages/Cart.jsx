@@ -20,6 +20,55 @@ function FlowerImg({ src, alt, emoji }) {
   return <span style={{ fontSize: '2.2rem', lineHeight: 1 }}>{emoji}</span>
 }
 
+const CART_RESPONSIVE_CSS = `
+  .cart-page-main { padding: 3rem 3rem 5rem; max-width: 860px; margin: 0 auto; }
+  .cart-layout { display: grid; grid-template-columns: 1fr 320px; gap: 2rem; align-items: start; }
+  .cart-item-card { display: flex; align-items: center; gap: 1rem; }
+  .cart-item-img { width: 72px; height: 72px; }
+  .cart-item-controls { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+  .cart-item-qty { display: flex; align-items: center; gap: 0.5rem; }
+  .cart-summary { position: sticky; top: 5rem; }
+
+  @media (max-width: 1200px) {
+    .cart-page-main { padding: 2.5rem 2rem 4rem; max-width: 100%; }
+  }
+
+  @media (max-width: 860px) {
+    .cart-layout { grid-template-columns: 1fr; }
+    .cart-summary { position: static; top: auto; }
+  }
+
+  @media (max-width: 640px) {
+    .cart-page-main { padding: 1.75rem 1.25rem 3.5rem; }
+    .cart-item-card { padding: 0.85rem !important; gap: 0.75rem !important; }
+    .cart-item-img { width: 62px !important; height: 62px !important; }
+  }
+
+  @media (max-width: 480px) {
+    .cart-page-main { padding: 1.5rem 1rem 3rem; }
+    .cart-item-card { flex-wrap: wrap; gap: 0.6rem !important; }
+    .cart-item-img { width: 56px !important; height: 56px !important; }
+    .cart-item-info { min-width: calc(100% - 56px - 0.6rem - 32px) !important; }
+    .cart-item-controls { order: 3; margin-left: calc(56px + 0.6rem); gap: 0.6rem !important; }
+    .cart-item-qty button { width: 26px !important; height: 26px !important; font-size: 1rem !important; }
+  }
+
+  @media (max-width: 380px) {
+    .cart-page-main { padding: 1.25rem 0.75rem 2.5rem; }
+    .cart-item-card { padding: 0.7rem !important; }
+    .cart-item-img { width: 50px !important; height: 50px !important; }
+    .cart-item-info p:nth-child(2) { font-size: 0.85rem !important; }
+    .cart-item-controls { margin-left: calc(50px + 0.6rem); }
+    .cart-summary { padding: 1.25rem !important; }
+  }
+
+  @media (max-width: 330px) {
+    .cart-item-card { flex-direction: column; align-items: stretch; }
+    .cart-item-card > div:first-child { width: 100% !important; height: 110px !important; }
+    .cart-item-controls { margin-left: 0; justify-content: space-between; width: 100%; }
+  }
+`
+
 export default function Cart({ cartItems, onRemove, onUpdateQty, onClearCart }) {
   const total = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0)
   const navigate = useNavigate()
@@ -29,7 +78,9 @@ export default function Cart({ cartItems, onRemove, onUpdateQty, onClearCart }) 
   }
 
   return (
-    <main className="cart-page-main" style={{ minHeight: '70vh', padding: '3rem 3rem 5rem', maxWidth: 860, margin: '0 auto' }}>
+    <main className="cart-page-main" style={{ minHeight: '70vh' }}>
+      <style>{CART_RESPONSIVE_CSS}</style>
+
       {/* Header */}
       <div style={{ marginBottom: '2rem' }}>
         <p style={{ fontSize: '0.7rem', letterSpacing: '0.16em', color: 'var(--pink)', fontWeight: 600, marginBottom: '0.4rem' }}>
@@ -42,7 +93,7 @@ export default function Cart({ cartItems, onRemove, onUpdateQty, onClearCart }) 
 
       {cartItems.length === 0 ? (
         /* Empty state */
-        <div style={{ textAlign: 'center', padding: '5rem 2rem', color: 'var(--text-muted)' }}>
+        <div style={{ textAlign: 'center', padding: '5rem 1rem', color: 'var(--text-muted)' }}>
           <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🛒</div>
           <h3 style={{ fontSize: '1.15rem', fontWeight: 500, color: 'var(--text)', marginBottom: '0.5rem' }}>
             Savat bo'sh
@@ -50,19 +101,18 @@ export default function Cart({ cartItems, onRemove, onUpdateQty, onClearCart }) 
           <p style={{ fontSize: '0.85rem' }}>Katalogdan gul tanlang va savatga qo'shing</p>
         </div>
       ) : (
-        <div className="cart-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2rem', alignItems: 'start' }}>
+        <div className="cart-layout">
 
           {/* Items list */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', minWidth: 0 }}>
             {cartItems.map(item => (
-              <div key={item.id} style={{
-                display: 'flex', alignItems: 'center', gap: '1rem',
+              <div key={item.id} className="cart-item-card" style={{
                 background: 'var(--white)', borderRadius: 16,
                 padding: '1rem', boxShadow: '0 2px 12px rgba(0,0,0,0.05)'
               }}>
                 {/* Image */}
-                <div style={{
-                  width: 72, height: 72, borderRadius: 10, overflow: 'hidden',
+                <div className="cart-item-img" style={{
+                  borderRadius: 10, overflow: 'hidden',
                   flexShrink: 0, background: 'var(--cream)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
@@ -70,11 +120,11 @@ export default function Cart({ cartItems, onRemove, onUpdateQty, onClearCart }) 
                 </div>
 
                 {/* Info */}
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div className="cart-item-info" style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontSize: '0.68rem', color: 'var(--pink)', fontWeight: 600, marginBottom: 2, letterSpacing: '0.05em' }}>
                     {item.type}
                   </p>
-                  <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '0.95rem', fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
+                  <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '0.95rem', fontWeight: 600, color: 'var(--text)', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {item.name}
                   </p>
                   <p style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)' }}>
@@ -82,61 +132,62 @@ export default function Cart({ cartItems, onRemove, onUpdateQty, onClearCart }) 
                   </p>
                 </div>
 
-                {/* Qty */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-                  <button
-                    onClick={() => onUpdateQty(item.id, item.qty - 1)}
-                    disabled={item.qty <= 1}
-                    style={{
-                      width: 30, height: 30, borderRadius: '50%',
-                      border: '1.5px solid var(--pink-light)',
-                      background: 'var(--white)', color: 'var(--pink)',
-                      fontSize: '1.1rem', cursor: item.qty <= 1 ? 'default' : 'pointer',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      opacity: item.qty <= 1 ? 0.35 : 1, transition: 'all 0.15s',
-                      fontFamily: 'inherit', lineHeight: 1
-                    }}
-                  >−</button>
-                  <span style={{ fontWeight: 700, fontSize: '0.95rem', minWidth: 20, textAlign: 'center' }}>
-                    {item.qty}
-                  </span>
-                  <button
-                    onClick={() => onUpdateQty(item.id, item.qty + 1)}
-                    style={{
-                      width: 30, height: 30, borderRadius: '50%',
-                      border: '1.5px solid var(--pink-light)',
-                      background: 'var(--white)', color: 'var(--pink)',
-                      fontSize: '1.1rem', cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'all 0.15s', fontFamily: 'inherit', lineHeight: 1
-                    }}
-                  >+</button>
-                </div>
+                {/* Qty + Remove */}
+                <div className="cart-item-controls">
+                  <div className="cart-item-qty">
+                    <button
+                      onClick={() => onUpdateQty(item.id, item.qty - 1)}
+                      disabled={item.qty <= 1}
+                      style={{
+                        width: 30, height: 30, borderRadius: '50%',
+                        border: '1.5px solid var(--pink-light)',
+                        background: 'var(--white)', color: 'var(--pink)',
+                        fontSize: '1.1rem', cursor: item.qty <= 1 ? 'default' : 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        opacity: item.qty <= 1 ? 0.35 : 1, transition: 'all 0.15s',
+                        fontFamily: 'inherit', lineHeight: 1, flexShrink: 0
+                      }}
+                    >−</button>
+                    <span style={{ fontWeight: 700, fontSize: '0.95rem', minWidth: 20, textAlign: 'center' }}>
+                      {item.qty}
+                    </span>
+                    <button
+                      onClick={() => onUpdateQty(item.id, item.qty + 1)}
+                      style={{
+                        width: 30, height: 30, borderRadius: '50%',
+                        border: '1.5px solid var(--pink-light)',
+                        background: 'var(--white)', color: 'var(--pink)',
+                        fontSize: '1.1rem', cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        transition: 'all 0.15s', fontFamily: 'inherit', lineHeight: 1, flexShrink: 0
+                      }}
+                    >+</button>
+                  </div>
 
-                {/* Remove */}
-                <button
-                  onClick={() => onRemove(item.id)}
-                  aria-label="O'chirish"
-                  style={{
-                    width: 32, height: 32, borderRadius: '50%',
-                    border: 'none', background: 'var(--cream-dark)',
-                    color: 'var(--text-muted)', fontSize: '0.85rem',
-                    cursor: 'pointer', flexShrink: 0,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'background 0.15s'
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = '#fce8ea'; e.currentTarget.style.color = 'var(--pink)' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-dark)'; e.currentTarget.style.color = 'var(--text-muted)' }}
-                >✕</button>
+                  {/* Remove */}
+                  <button
+                    onClick={() => onRemove(item.id)}
+                    aria-label="O'chirish"
+                    style={{
+                      width: 32, height: 32, borderRadius: '50%',
+                      border: 'none', background: 'var(--cream-dark)',
+                      color: 'var(--text-muted)', fontSize: '0.85rem',
+                      cursor: 'pointer', flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'background 0.15s'
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#fce8ea'; e.currentTarget.style.color = 'var(--pink)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'var(--cream-dark)'; e.currentTarget.style.color = 'var(--text-muted)' }}
+                  >✕</button>
+                </div>
               </div>
             ))}
           </div>
 
           {/* Order summary */}
-          <div style={{
+          <div className="cart-summary" style={{
             background: 'var(--white)', borderRadius: 20,
-            padding: '1.5rem', boxShadow: '0 2px 16px rgba(0,0,0,0.07)',
-            position: 'sticky', top: '5rem'
+            padding: '1.5rem', boxShadow: '0 2px 16px rgba(0,0,0,0.07)'
           }}>
             <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '1rem', fontWeight: 600, color: 'var(--text)', marginBottom: '1.25rem' }}>
               Buyurtma xulosasi

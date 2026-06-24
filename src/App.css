@@ -35,8 +35,8 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 3rem;
-  height: 68px;
+  padding: 0 2.5rem;
+  height: 60px;
   background: var(--cream);
   border-bottom: 1px solid var(--cream-dark);
   position: sticky;
@@ -47,11 +47,11 @@ button {
 .navbar-logo {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 
 .logo-icon {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   color: var(--pink);
   line-height: 1;
 }
@@ -63,14 +63,14 @@ button {
 
 .logo-name {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--text);
   line-height: 1.1;
 }
 
 .logo-sub {
-  font-size: 0.58rem;
+  font-size: 0.55rem;
   letter-spacing: 0.12em;
   color: var(--text-muted);
   font-weight: 500;
@@ -79,12 +79,12 @@ button {
 .navbar-links {
   display: flex;
   list-style: none;
-  gap: 2.5rem;
+  gap: 2rem;
 }
 
 .navbar-links a {
   text-decoration: none;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   color: var(--text);
   font-weight: 400;
   transition: color 0.2s;
@@ -96,14 +96,15 @@ button {
 
 .navbar-icons {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  align-items: center;
 }
 
 .icon-btn {
   background: none;
   border: none;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -119,12 +120,14 @@ button {
 /* ─── HERO ─── */
 .hero {
   position: relative;
-  height: 560px;
+  min-height: 340px;
+  height: clamp(300px, 38vw, 420px);
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
   display: flex;
   align-items: center;
+  
 }
 
 .hero-overlay {
@@ -132,48 +135,49 @@ button {
   inset: 0;
   background: linear-gradient(
     to right,
-    rgba(245, 240, 235, 0.82) 0%,
-    rgba(245, 240, 235, 0.5) 50%,
-    rgba(245, 240, 235, 0.1) 100%
+    rgba(245, 240, 235, 0.88) 0%,
+    rgba(245, 240, 235, 0.55) 50%,
+    rgba(245, 240, 235, 0.08) 100%
   );
 }
 
 .hero-content {
   position: relative;
   z-index: 1;
-  padding: 0 4rem;
-  max-width: 620px;
+  padding: 0 3rem;
+  max-width: 540px;
 }
 
 .hero-title {
   font-family: 'Montserrat', sans-serif;
-  font-size: 3.6rem;
-  font-weight: 500;
-  line-height: 1.15;
+  font-size: 2.4rem;
+  font-weight: 600;
+  line-height: 1.2;
   color: var(--text);
-  margin-bottom: 1.1rem;
+  margin-bottom: 0.75rem;
 }
 
 .hero-subtitle {
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   color: var(--text-muted);
   line-height: 1.6;
-  margin-bottom: 2rem;
-  max-width: 420px;
+  margin-bottom: 1.4rem;
+  max-width: 380px;
 }
 
 .hero-btns {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .btn-primary {
   background: var(--pink);
   color: var(--white);
-  padding: 0.7rem 1.6rem;
+  padding: 0.6rem 1.4rem;
   border-radius: 30px;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 500;
   transition: background 0.2s, transform 0.15s;
   letter-spacing: 0.01em;
@@ -187,10 +191,10 @@ button {
 .btn-outline {
   background: transparent;
   color: var(--text);
-  padding: 0.68rem 1.5rem;
+  padding: 0.58rem 1.3rem;
   border-radius: 30px;
   border: 1.5px solid var(--text);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 500;
   transition: all 0.2s;
 }
@@ -203,39 +207,40 @@ button {
 /* ─── SECTION HEADER ─── */
 .section-header {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .section-title {
   font-family: 'Montserrat', sans-serif;
-  font-size: 2.8rem;
+  font-size: 2.2rem;
   font-weight: 500;
   color: var(--text);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
 .section-sub {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--text-muted);
 }
 
 /* ─── COLLECTIONS ─── */
 .collections-section {
-  padding: 5rem 3rem;
+  padding: 3.5rem 2.5rem;
   background: var(--cream);
+  margin-top: 1.5rem;
 }
 
 .collections-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
+  gap: 1rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 .collection-card {
   position: relative;
-  height: 340px;
+  height: 280px;
   border-radius: var(--radius);
   overflow: hidden;
   background-size: cover;
@@ -258,34 +263,34 @@ button {
   position: absolute;
   bottom: 0;
   left: 0;
-  padding: 1.5rem;
+  padding: 1.25rem;
   color: var(--white);
   z-index: 1;
 }
 
 .collection-count {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   opacity: 0.85;
   display: block;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.25rem;
 }
 
 .collection-name {
   font-family: 'Montserrat', sans-serif;
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 500;
   line-height: 1.1;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.2rem;
 }
 
 .collection-desc {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   opacity: 0.8;
 }
 
 /* ─── PRODUCTS ─── */
 .products-section {
-  padding: 2rem 0 5rem;
+  padding: 1.5rem 0 3.5rem;
   background: var(--cream);
 }
 
@@ -293,26 +298,26 @@ button {
   position: relative;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 3rem;
+  padding: 0 2.5rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .products-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1.1rem;
+  gap: 1rem;
   flex: 1;
 }
 
 .carousel-btn {
   background: var(--white);
   border: 1px solid var(--cream-dark);
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   color: var(--text);
   display: flex;
   align-items: center;
@@ -345,15 +350,20 @@ button {
 
 .product-img-wrap {
   position: relative;
-  height: 220px;
+  height: 190px;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .product-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s;
+  object-position: center;
+  display: block;
+  transition: transform 0.35s ease;
 }
 
 .product-card:hover .product-img {
@@ -366,22 +376,22 @@ button {
   left: 10px;
   background: rgba(255,255,255,0.92);
   color: var(--text);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  padding: 3px 10px;
+  padding: 3px 9px;
   border-radius: 20px;
   letter-spacing: 0.03em;
 }
 
 .product-body {
-  padding: 1rem;
+  padding: 0.85rem;
 }
 
 .product-name {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 500;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.35rem;
   color: var(--text);
 }
 
@@ -389,7 +399,7 @@ button {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.75rem;
 }
 
 .stars {
@@ -400,7 +410,7 @@ button {
 
 .star {
   color: #d4b896;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
 }
 
 .star.filled {
@@ -408,13 +418,13 @@ button {
 }
 
 .rating-num {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
   margin-left: 3px;
 }
 
 .review-count {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
 }
 
@@ -425,7 +435,7 @@ button {
 }
 
 .product-price {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text);
 }
@@ -433,13 +443,13 @@ button {
 .btn-cart {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   background: var(--pink-pale);
   color: var(--pink);
   border: none;
-  padding: 0.45rem 0.9rem;
+  padding: 0.42rem 0.85rem;
   border-radius: 25px;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 500;
   transition: all 0.2s;
 }
@@ -451,7 +461,7 @@ button {
 
 /* ─── HOW IT WORKS ─── */
 .hiw-section {
-  padding: 5rem 3rem;
+  padding: 3.5rem 2.5rem;
   background: var(--cream);
 }
 
@@ -459,7 +469,7 @@ button {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  max-width: 900px;
+  max-width: 860px;
   margin: 0 auto;
   text-align: center;
 }
@@ -476,12 +486,12 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .hiw-icon-bg {
-  width: 110px;
-  height: 110px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   background: var(--cream-dark);
   opacity: 0.6;
@@ -489,35 +499,37 @@ button {
 
 .hiw-icon-circle {
   position: absolute;
-  width: 68px;
-  height: 68px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: var(--white);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  box-shadow: 0 4px 16px rgba(196,132,138,0.18);
+  color: var(--pink);
+  z-index: 1;
 }
 
 .hiw-icon {
-  font-size: 1.5rem;
-  color: var(--pink);
+  display: flex;
 }
 
 .hiw-num {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 24px;
-  height: 24px;
-  background: var(--pink);
-  color: var(--white);
+  bottom: -4px;
+  right: -2px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  font-size: 0.72rem;
-  font-weight: 600;
+  background: var(--pink);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
 }
 
 .hiw-line {
@@ -533,68 +545,58 @@ button {
 
 .hiw-title {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   font-weight: 500;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.5rem;
   color: var(--text);
 }
 
 .hiw-desc {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
   line-height: 1.6;
-  max-width: 220px;
+  max-width: 200px;
   margin: 0 auto;
 }
 
-/* ─── RESPONSIVE ─── */
-@media (max-width: 900px) {
-  .collections-grid,
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .hiw-steps {
-    grid-template-columns: 1fr;
-  }
-
-  .hiw-line {
-    display: none;
-  }
-
-  .navbar-links {
-    display: none;
-  }
-
-  .hero-title {
-    font-size: 2.4rem;
-  }
+/* ─── PRODUCT ICON ─── */
+.product-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+  transition: opacity 0.2s, transform 0.2s;
 }
 
-@media (max-width: 600px) {
-  .collections-grid,
-  .products-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .hero {
-    height: auto;
-    padding: 3rem 0;
-  }
-
-  .hero-content {
-    padding: 0 1.5rem;
-  }
-
-  .navbar {
-    padding: 0 1rem;
-  }
+.product-card:hover .product-icon-wrap {
+  opacity: 1;
+  transform: scale(1.08);
 }
+
+.product-type-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.product-desc-short {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* ─── FOOTER ─── */
 .footer {
   background: var(--text);
   color: var(--cream);
-  padding: 3.5rem 3rem 1.5rem;
+  padding: 3rem 2.5rem 1.5rem;
 }
 
 .footer-content {
@@ -603,7 +605,7 @@ button {
   gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding-bottom: 2.5rem;
+  padding-bottom: 2rem;
   border-bottom: 1px solid rgba(245, 240, 235, 0.12);
 }
 
@@ -613,29 +615,29 @@ button {
 }
 
 .footer-desc {
-  font-size: 0.85rem;
+  font-size: 0.83rem;
   line-height: 1.6;
   color: var(--text-muted);
   margin-top: 1rem;
-  max-width: 280px;
+  max-width: 260px;
 }
 
 .footer-title {
   font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  margin-bottom: 0.9rem;
 }
 
 .footer-links {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.55rem;
 }
 
 .footer-links li {
-  font-size: 0.85rem;
+  font-size: 0.83rem;
   color: var(--text-muted);
 }
 
@@ -652,100 +654,19 @@ button {
 .footer-bottom {
   max-width: 1200px;
   margin: 0 auto;
-  padding-top: 1.5rem;
+  padding-top: 1.25rem;
   text-align: center;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
 }
 
-
-/* ─── HOME PRODUCTS – CATALOG PATCH ─── */
-/* App.css ga yoki index.css ga qo'shing */
-
-/* Rasm yo'q bo'lganda icon markazlashishi */
-.product-img-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Real rasm bo'lganda cover */
-.product-img-wrap .product-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-  transition: transform 0.35s ease;
-}
-
-.product-card:hover .product-img {
-  transform: scale(1.05);
-}
-
-/* SVG icon wrapper */
-.product-icon-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.75;
-  transition: opacity 0.2s, transform 0.2s;
-}
-
-.product-card:hover .product-icon-wrap {
-  opacity: 1;
-  transform: scale(1.08);
-}
-
-/* Gul turi labeli (rangli) */
-.product-type-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-
-/* Qisqa tavsif */
-.product-desc-short {
-  font-size: 0.74rem;
-  color: var(--text-muted, #9e8c84);
-  line-height: 1.45;
-  margin-bottom: 12px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-
-@media (max-width: 900px) {
-  .footer-content {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 600px) {
-  .footer-content {
-    grid-template-columns: 1fr;
-  }
-
-  .footer {
-    padding: 2.5rem 1.5rem 1.5rem;
-  }
-}
-/* ═══════════════════════════════════════════════════════
-   RESPONSIVE — HAMBURGER & MOBILE MENU
-═══════════════════════════════════════════════════════ */
-
+/* ─── HAMBURGER & MOBILE MENU ─── */
 .hamburger-btn {
   display: none;
   background: none;
   border: none;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   align-items: center;
   justify-content: center;
@@ -761,22 +682,22 @@ button {
 .mobile-menu {
   display: none;
   position: fixed;
-  top: 68px;
+  top: 60px;
   left: 0;
   right: 0;
   background: var(--cream);
   border-bottom: 1px solid var(--cream-dark);
   flex-direction: column;
   z-index: 99;
-  padding: 0.5rem 0;
+  padding: 0.4rem 0;
   box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
 .mobile-menu-link {
   display: block;
-  padding: 0.9rem 1.5rem;
+  padding: 0.85rem 1.5rem;
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: var(--text);
   border-bottom: 1px solid var(--cream-dark);
   transition: background 0.15s;
@@ -790,12 +711,19 @@ button {
   background: var(--cream-dark);
 }
 
-/* ═══════════════════════════════════════════════════════
-   BREAKPOINT: TABLET (max 900px)
-═══════════════════════════════════════════════════════ */
-@media (max-width: 900px) {
+/* ═══════════════════════════════════════════════════
+   TABLET (max 1024px)
+═══════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 
-  /* Navbar */
+/* ═══════════════════════════════════════════════════
+   TABLET (max 900px)
+═══════════════════════════════════════════════════ */
+@media (max-width: 900px) {
   .navbar {
     padding: 0 1.25rem;
   }
@@ -812,34 +740,36 @@ button {
     display: flex;
   }
 
-  /* Hero */
   .hero {
-    height: 420px;
+    min-height: 280px;
+    height: clamp(260px, 35vw, 360px);
   }
 
   .hero-title {
-    font-size: 2.4rem;
+    font-size: 1.9rem;
   }
 
   .hero-content {
     padding: 0 2rem;
+    max-width: 460px;
   }
 
-  /* Section */
   .section-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 
-  /* Collections */
   .collections-section {
-    padding: 3rem 1.5rem;
+    padding: 2.5rem 1.5rem;
   }
 
   .collections-grid {
     grid-template-columns: 1fr 1fr;
   }
 
-  /* Products */
+  .collection-card {
+    height: 230px;
+  }
+
   .products-carousel-wrap {
     padding: 0 1.5rem;
   }
@@ -848,24 +778,22 @@ button {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  /* HIW */
   .hiw-section {
-    padding: 3rem 1.5rem;
+    padding: 2.5rem 1.5rem;
   }
 
   .hiw-steps {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
-    max-width: 400px;
+    gap: 2rem;
+    max-width: 360px;
   }
 
   .hiw-line {
     display: none;
   }
 
-  /* Footer */
   .footer {
-    padding: 2.5rem 1.5rem 1.5rem;
+    padding: 2rem 1.5rem 1.25rem;
   }
 
   .footer-content {
@@ -873,143 +801,321 @@ button {
     gap: 1.5rem;
   }
 
-  /* Cart */
+  /* Cart & Checkout */
   .cart-layout {
     grid-template-columns: 1fr !important;
   }
 
-  /* Checkout */
   .checkout-layout {
     grid-template-columns: 1fr !important;
   }
 }
 
-/* ═══════════════════════════════════════════════════════
-   BREAKPOINT: MOBILE (max 600px)
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   MOBILE (max 600px)
+═══════════════════════════════════════════════════ */
 @media (max-width: 600px) {
-
-  /* Navbar */
   .navbar {
     padding: 0 1rem;
-    height: 60px;
+    height: 56px;
+  }
+
+  .mobile-menu {
+    top: 56px;
   }
 
   .logo-name {
     font-size: 1rem;
   }
 
-  /* Hero */
   .hero {
     height: auto;
-    min-height: 320px;
-    padding: 3rem 0 2rem;
-    align-items: flex-end;
+    min-height: 240px;
+    padding: 2rem 0 1.75rem;
+    align-items: center;
   }
 
   .hero-content {
-    padding: 0 1.25rem 1.5rem;
+    padding: 0 1.25rem;
     max-width: 100%;
   }
 
   .hero-title {
-    font-size: 1.8rem;
+    font-size: 1.55rem;
+    line-height: 1.25;
   }
 
   .hero-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+    max-width: 100%;
   }
 
   .hero-btns {
+    gap: 0.5rem;
     flex-wrap: wrap;
-    gap: 0.65rem;
   }
 
   .btn-primary, .btn-outline {
-    font-size: 0.82rem;
-    padding: 0.6rem 1.2rem;
+    font-size: 0.78rem;
+    padding: 0.5rem 1rem;
   }
 
-  /* Section header */
   .section-title {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
 
   .section-sub {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     padding: 0 1rem;
   }
 
-  /* Collections */
   .collections-section {
-    padding: 2.5rem 1rem;
+    padding: 2rem 1rem;
   }
 
   .collections-grid {
     grid-template-columns: 1fr;
-    gap: 0.85rem;
+    gap: 0.75rem;
   }
 
   .collection-card {
-    height: 220px;
+    height: 200px;
   }
 
   .collection-name {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
 
-  /* Products */
   .products-section {
-    padding: 1.5rem 0 3rem;
+    padding: 1.25rem 0 2.5rem;
   }
 
   .products-carousel-wrap {
-    padding: 0 0.75rem;
-    gap: 0.5rem;
+    padding: 0 0.5rem;
+    gap: 0.35rem;
   }
 
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.65rem;
+    gap: 0.5rem;
   }
 
   .product-img-wrap {
-    height: 150px;
+    height: 145px;
+  }
+
+  .product-body {
+    padding: 0.7rem;
   }
 
   .product-name {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+  }
+
+  .product-price {
+    font-size: 0.82rem;
+  }
+
+  .btn-cart {
+    font-size: 0.7rem;
+    padding: 0.38rem 0.65rem;
   }
 
   .carousel-btn {
-    width: 30px;
-    height: 30px;
-    font-size: 1.1rem;
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
     flex-shrink: 0;
   }
 
-  /* HIW */
   .hiw-section {
-    padding: 2.5rem 1rem;
+    padding: 2rem 1rem;
   }
 
-  /* Footer */
   .footer {
-    padding: 2rem 1rem 1rem;
+    padding: 1.75rem 1rem 1rem;
   }
 
   .footer-content {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1.25rem;
   }
 
-  /* Cart page */
   .cart-page-main {
-    padding: 2rem 1rem 3rem !important;
+    padding: 1.5rem 1rem 3rem !important;
   }
 
-  /* Checkout page */
   .checkout-page-main {
-    padding: 2rem 1rem 3rem !important;
+    padding: 1.5rem 1rem 3rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   KICHIK MOBILE (max 400px)
+═══════════════════════════════════════════════════ */
+@media (max-width: 400px) {
+  .hero {
+    min-height: 210px;
+    padding: 1.5rem 0 1.25rem;
+  }
+
+  .hero-title {
+    font-size: 1.3rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.76rem;
+  }
+
+  .logo-name {
+    font-size: 0.9rem;
+  }
+
+  .logo-icon {
+    font-size: 1.2rem;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.45rem;
+  }
+
+  .product-img-wrap {
+    height: 120px;
+  }
+
+  .btn-cart {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.65rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   JUDA KICHIK MOBILE (max 320px)
+═══════════════════════════════════════════════════ */
+@media (max-width: 320px) {
+  .navbar {
+    padding: 0 0.75rem;
+    height: 52px;
+  }
+
+  .mobile-menu {
+    top: 52px;
+  }
+
+  .logo-name {
+    font-size: 0.82rem;
+  }
+
+  .logo-sub {
+    font-size: 0.48rem;
+  }
+
+  .logo-icon {
+    font-size: 1.1rem;
+  }
+
+  .hero {
+    min-height: 190px;
+    padding: 1.25rem 0 1rem;
+  }
+
+  .hero-content {
+    padding: 0 1rem;
+  }
+
+  .hero-title {
+    font-size: 1.15rem;
+    line-height: 1.3;
+  }
+
+  .hero-subtitle {
+    font-size: 0.72rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .btn-primary, .btn-outline {
+    font-size: 0.72rem;
+    padding: 0.45rem 0.85rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+  }
+
+  .section-sub {
+    font-size: 0.72rem;
+  }
+
+  .collections-section {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .collection-card {
+    height: 170px;
+  }
+
+  .collection-name {
+    font-size: 1.1rem;
+  }
+
+  .products-carousel-wrap {
+    padding: 0 0.4rem;
+    gap: 0.3rem;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.35rem;
+  }
+
+  .product-img-wrap {
+    height: 105px;
+  }
+
+  .product-body {
+    padding: 0.55rem;
+  }
+
+  .product-name {
+    font-size: 0.78rem;
+  }
+
+  .product-price {
+    font-size: 0.72rem;
+  }
+
+  .btn-cart {
+    padding: 0.28rem 0.4rem;
+    font-size: 0.6rem;
+  }
+
+  .carousel-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 0.9rem;
+  }
+
+  .hiw-section {
+    padding: 1.5rem 0.75rem;
+  }
+
+  .hiw-icon-bg {
+    width: 70px;
+    height: 70px;
+  }
+
+  .hiw-icon-circle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .footer {
+    padding: 1.5rem 0.75rem 0.75rem;
+  }
+
+  .footer-content {
+    gap: 1rem;
   }
 }

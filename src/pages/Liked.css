@@ -278,38 +278,225 @@
   font-size: 0.82rem;
 }
 
-/* ─── RESPONSIVE ─── */
+/* ═══════════════════════════════════════════════════════
+   LIKED RESPONSIVE — 1100px
+═══════════════════════════════════════════════════════ */
 @media (max-width: 1100px) {
   .liked-grid {
     grid-template-columns: repeat(3, 1fr);
+    padding: 0 2rem 3.5rem;
   }
 }
 
-@media (max-width: 768px) {
-  .liked-grid {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 0 1.5rem 3rem;
-  }
-
-  .liked-section-top {
-    padding: 1rem 1.5rem 0.75rem;
-  }
-
-  .liked-hero-content {
-    padding: 0 1.5rem 2rem;
+/* ═══════════════════════════════════════════════════════
+   LIKED RESPONSIVE — 900px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .liked-hero {
+    height: 200px;
   }
 
   .liked-hero-title {
     font-size: 2rem;
   }
 
+  .liked-hero-content {
+    padding: 0 1.5rem 2rem;
+  }
+
   .liked-hero-deco {
-    display: none;
+    font-size: 5rem;
+    right: 2rem;
+  }
+
+  .liked-section-top {
+    padding: 1rem 1.5rem 0.75rem;
+  }
+
+  .liked-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 1.5rem 3rem;
+    gap: 0.85rem;
   }
 }
 
-@media (max-width: 480px) {
+/* ═══════════════════════════════════════════════════════
+   LIKED RESPONSIVE — 600px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .liked-hero {
+    height: 150px;
+  }
+
+  .liked-hero-title {
+    font-size: 1.55rem;
+  }
+
+  .liked-hero-sub {
+    font-size: 0.78rem;
+  }
+
+  .liked-hero-content {
+    padding: 0 1rem 1.25rem;
+  }
+
+  .liked-hero-deco {
+    display: none;
+  }
+
+  .liked-section-top {
+    padding: 0.85rem 1rem 0.6rem;
+  }
+
+  .liked-section-top h2 {
+    font-size: 1.15rem;
+  }
+
   .liked-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 1rem 2.5rem;
+    gap: 0.6rem;
+  }
+
+  .liked-card-img {
+    height: 130px;
+  }
+
+  .liked-card-body {
+    padding: 0.75rem;
+  }
+
+  .liked-card-name {
+    font-size: 0.85rem;
+  }
+
+  .liked-card-desc {
+    font-size: 0.7rem;
+    margin-bottom: 8px;
+  }
+
+  .liked-card-price {
+    font-size: 0.82rem;
+  }
+
+  .liked-cart-btn {
+    font-size: 0.68rem;
+    padding: 5px 10px;
+  }
+
+  .liked-unlike-btn {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   LIKED RESPONSIVE — 400px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 400px) {
+  .liked-hero {
+    height: 130px;
+  }
+
+  .liked-hero-title {
+    font-size: 1.3rem;
+  }
+
+  .liked-hero-sub {
+    display: none;
+  }
+
+  .liked-grid {
+    padding: 0 0.75rem 2rem;
+    gap: 0.5rem;
+  }
+
+  .liked-card-img {
+    height: 115px;
+  }
+
+  .liked-card-body {
+    padding: 0.6rem;
+  }
+
+  .liked-card-name {
+    font-size: 0.78rem;
+  }
+
+  .liked-card-price {
+    font-size: 0.75rem;
+  }
+
+  .liked-cart-btn {
+    font-size: 0.62rem;
+    padding: 4px 8px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   LIKED RESPONSIVE — 320px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 320px) {
+  .liked-hero {
+    height: 110px;
+  }
+
+  .liked-hero-title {
+    font-size: 1.15rem;
+  }
+
+  .liked-hero-content {
+    padding: 0 0.75rem 1rem;
+  }
+
+  .liked-section-top {
+    padding: 0.65rem 0.75rem 0.5rem;
+  }
+
+  .liked-section-top h2 {
+    font-size: 1rem;
+  }
+
+  .liked-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 0.6rem 1.75rem;
+    gap: 0.4rem;
+  }
+
+  .liked-card-img {
+    height: 100px;
+  }
+
+  .liked-card-body {
+    padding: 0.5rem;
+  }
+
+  .liked-card-name {
+    font-size: 0.72rem;
+    margin-bottom: 3px;
+  }
+
+  .liked-card-desc {
+    font-size: 0.65rem;
+    margin-bottom: 6px;
+  }
+
+  .liked-card-price {
+    font-size: 0.68rem;
+  }
+
+  .liked-cart-btn {
+    font-size: 0.58rem;
+    padding: 3px 7px;
+  }
+
+  .liked-unlike-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .liked-unlike-btn svg {
+    width: 13px;
+    height: 13px;
   }
 }

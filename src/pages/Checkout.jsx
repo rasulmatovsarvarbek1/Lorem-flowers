@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { supabase } from '../supabase'
+import './Checkout.css'
 
 function formatPrice(price) {
   return new Intl.NumberFormat('uz-UZ').format(price) + " so'm"
@@ -210,10 +212,39 @@ export default function Checkout({ cartItems, onClearCart }) {
     }
   }
 
+  const saveOrderToSupabase = async (orderNum) => {
+    const total = cartItems.reduce((s, i) => s + i.price * i.qty, 0)
+    const totalQty = cartItems.reduce((s, i) => s + i.qty, 0)
+    try {
+      await supabase.from('orders').insert({
+        order_number: orderNum,
+        customer_name: `${form.firstName} ${form.lastName}`.trim(),
+        phone: form.phone.replace(/\D/g, ''),
+        items: cartItems.map(i => ({
+          id: i.id,
+          name: i.name,
+          price: i.price,
+          qty: i.qty,
+          emoji: i.emoji || '🌸',
+        })),
+        total_price: total,
+        total_qty: totalQty,
+        delivery: form.delivery,
+        address: form.address || null,
+        payment: form.payment,
+        note: form.note || null,
+        status: 'new',
+      })
+    } catch (err) {
+      console.error('Supabase order save error:', err)
+    }
+  }
+
   const handleSubmit = async () => {
     const e = validate()
     if (Object.keys(e).length) { setErrors(e); return }
     await sendTelegramMessage(orderNumber)
+    await saveOrderToSupabase(orderNumber)
     setSubmitted(true)
     onClearCart()
   }
@@ -258,12 +289,12 @@ export default function Checkout({ cartItems, onClearCart }) {
   })
 
   return (
-    <main className="checkout-page-main" style={{ minHeight: '70vh', padding: '3rem 3rem 5rem', maxWidth: 960, margin: '0 auto' }}>
+    <main className="checkout-page-main">
       <style>{`
-        .checkout-input:focus { border-color: var(--pink) !important; box-shadow: 0 0 0 3px rgba(196,132,138,0.12); }
-        .checkout-textarea:focus { border-color: var(--pink) !important; box-shadow: 0 0 0 3px rgba(196,132,138,0.12); }
-        @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
-        .shake { animation: shake 0.3s ease; }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
       `}</style>
 
       {/* Header */}
@@ -271,12 +302,12 @@ export default function Checkout({ cartItems, onClearCart }) {
         <p style={{ fontSize: '0.7rem', letterSpacing: '0.16em', color: 'var(--pink)', fontWeight: 600, marginBottom: '0.4rem' }}>
           RASMIYLASHTIRISH
         </p>
-        <h1 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '2rem', fontWeight: 600, color: 'var(--text)' }}>
+        <h1 className="checkout-header-title" style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '2rem', fontWeight: 600, color: 'var(--text)' }}>
           Buyurtma berish
         </h1>
       </div>
 
-      <div className="checkout-layout" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '1.5rem', alignItems: 'start' }}>
+      <div className="checkout-layout">
 
         {/* ── LEFT COLUMN ── */}
         <div>
@@ -287,7 +318,7 @@ export default function Checkout({ cartItems, onClearCart }) {
               <span style={{ width: 26, height: 26, borderRadius: '50%', background: 'var(--pink-pale)', color: 'var(--pink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700 }}>1</span>
               Shaxsiy ma'lumotlar
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.9rem', marginBottom: '0.9rem' }}>
+            <div className="checkout-name-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.9rem', marginBottom: '0.9rem' }}>
               <Field label="ISM *" error={errors.firstName}>
                 <input
                   className="checkout-input"
@@ -334,7 +365,7 @@ export default function Checkout({ cartItems, onClearCart }) {
               Yetkazib berish
             </p>
 
-            <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '0.9rem' }}>
+            <div className="checkout-radio-row" style={{ display: 'flex', gap: '0.6rem', marginBottom: '0.9rem' }}>
               {[
                 { val: 'yes', icon: '🚚', label: 'Yetkazib berish', sub: 'Manzilingizga' },
                 { val: 'no',  icon: '🏪', label: 'Olib ketaman',    sub: 'Do\'kondan' },
@@ -380,7 +411,7 @@ export default function Checkout({ cartItems, onClearCart }) {
               <span style={{ width: 26, height: 26, borderRadius: '50%', background: 'var(--pink-pale)', color: 'var(--pink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700 }}>3</span>
               To'lov usuli *
             </p>
-            <div style={{ display: 'flex', gap: '0.6rem', marginBottom: errors.payment ? '0.4rem' : 0 }}>
+            <div className="checkout-radio-row" style={{ display: 'flex', gap: '0.6rem', marginBottom: errors.payment ? '0.4rem' : 0 }}>
               {[
                 { val: 'cash', icon: '💵', label: 'Naqd pul', sub: 'Yetkazib berishda' },
                 { val: 'card', icon: '💳', label: 'Plastik karta', sub: 'Uzcard / Humo' },
@@ -419,7 +450,7 @@ export default function Checkout({ cartItems, onClearCart }) {
         </div>
 
         {/* ── RIGHT COLUMN — Order summary ── */}
-        <div style={{ position: 'sticky', top: '5rem' }}>
+        <div className="checkout-right">
           <div style={{ background: 'var(--white)', borderRadius: 18, padding: '1.4rem', boxShadow: '0 2px 16px rgba(0,0,0,0.07)', marginBottom: '1rem' }}>
             <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '0.92rem', fontWeight: 700, color: 'var(--text)', marginBottom: '1rem' }}>
               Buyurtma ({cartItems.reduce((s, i) => s + i.qty, 0)} ta)

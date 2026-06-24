@@ -1,0 +1,107 @@
+/* ─── CHECKOUT PAGE ─── */
+.checkout-page-main {
+  min-height: 70vh;
+  padding: 3rem 3rem 5rem;
+  max-width: 960px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.checkout-input:focus {
+  border-color: var(--pink) !important;
+  box-shadow: 0 0 0 3px rgba(196, 132, 138, 0.12);
+}
+
+.checkout-textarea:focus {
+  border-color: var(--pink) !important;
+  box-shadow: 0 0 0 3px rgba(196, 132, 138, 0.12);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-4px); }
+  75%       { transform: translateX(4px); }
+}
+
+.shake { animation: shake 0.3s ease; }
+
+/* Layout */
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* Right column sticky */
+.checkout-right {
+  position: sticky;
+  top: 5rem;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CHECKOUT RESPONSIVE — 900px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .checkout-page-main {
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-right {
+    position: static;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CHECKOUT RESPONSIVE — 600px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .checkout-page-main {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  /* Ism/Familya — 1 kolonnaga */
+  .checkout-name-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Delivery/payment radio kartalar vertikal */
+  .checkout-radio-row {
+    flex-direction: column !important;
+  }
+
+  /* Header title kichikroq */
+  .checkout-header-title {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CHECKOUT RESPONSIVE — 400px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 400px) {
+  .checkout-page-main {
+    padding: 1.25rem 0.75rem 2.5rem;
+  }
+
+  .checkout-header-title {
+    font-size: 1.3rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CHECKOUT RESPONSIVE — 320px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 320px) {
+  .checkout-page-main {
+    padding: 1rem 0.65rem 2rem;
+  }
+
+  .checkout-header-title {
+    font-size: 1.15rem !important;
+  }
+}
