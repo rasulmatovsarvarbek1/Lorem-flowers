@@ -7,11 +7,13 @@ function fmt(n) {
 
 // catalog.json dagi barcha kategoriyalar
 const CATEGORIES = [
-  { id: 'buket',   label: 'Buketlar'    },
-  { id: 'donalik', label: 'Donalik'     },
-  { id: 'bayram',  label: 'Bayram uchun'},
-  { id: 'kelin',   label: 'Kelin uchun' },
-  { id: 'harf',    label: 'Ism yozish'  },
+  { id: 'buket',    label: 'Buketlar'    },
+  { id: 'donalik',  label: 'Donalik'     },
+  { id: 'bayram',   label: 'Bayram uchun'},
+  { id: 'kelin',    label: 'Kelin uchun' },
+  { id: 'harf',     label: 'Ism yozish'  },
+  { id: 'qogoz',    label: "Qog'oz"      },
+  { id: 'savatcha', label: 'Savatcha'    },
 ]
 
 // imgClass → karta rangi (Catalog.jsx da ham shu)
@@ -48,16 +50,17 @@ async function deleteProduct(id) {
 }
 
 // ─── MAHSULOT MODAL ──────────────────────────────────────────────
-function ProductModal({ product, onSave, onClose, categories }) {
+function ProductModal({ product, defaultCategory, onSave, onClose, categories }) {
   const [form, setForm] = useState({
     name:      product?.name      || '',
     type:      product?.type      || '',
     desc:      product?.desc      || '',
     price:     product?.price     || '',
-    category:  product?.category  || (categories[0]?.id || 'buket'),
+    category:  product?.category  || defaultCategory || (categories[0]?.id || 'buket'),
     imgClass:  product?.imgClass  || 'atirgul',
     badge:     product?.badge     || '',
     imageUrl:  product?.imageUrl  || '',
+    color:     product?.color     || '#f4c0c0',
     stock:     product?.stock     ?? true,
   })
 
@@ -78,10 +81,32 @@ function ProductModal({ product, onSave, onClose, categories }) {
     if (!label) return
     const id = label.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '')
     const { error } = await supabase.from('categories').insert({ id, label, filters: ['Barchasi'] })
-    if (error) { alert('Xato: ' + error.message); return }
+    if (error) {
+      if (error.message.includes('row-level security') || error.code === '42501') {
+        alert('❌ Supabase RLS xatosi!\n\nSupabase Dashboard > Table Editor > categories > RLS ga kiring va "Allow insert for all" policy qo\'shing.\n\nYoki pastdagi SQL ni Supabase SQL Editor da ishga tushiring:\n\nCREATE POLICY "allow_all" ON categories FOR ALL USING (true) WITH CHECK (true);')
+      } else {
+        alert('Xato: ' + error.message)
+      }
+      return
+    }
     setNewCatMode(false)
     setNewCatLabel('')
     set('category', id)
+    window.dispatchEvent(new CustomEvent('categories_updated'))
+  }
+
+  const handleDeleteCategory = async (catId) => {
+    if (!window.confirm("Bu kategoriyani o'chirishni tasdiqlaysizmi?")) return
+    const { error } = await supabase.from('categories').delete().eq('id', catId)
+    if (error) {
+      if (error.message.includes('row-level security') || error.code === '42501') {
+        alert('❌ Supabase RLS xatosi! SQL Editor da ishga tushiring:\n\nCREATE POLICY "allow_all" ON categories FOR ALL USING (true) WITH CHECK (true);')
+      } else {
+        alert('Xato: ' + error.message)
+      }
+      return
+    }
+    if (form.category === catId) set('category', categories[0]?.id || '')
     window.dispatchEvent(new CustomEvent('categories_updated'))
   }
 
@@ -90,10 +115,26 @@ function ProductModal({ product, onSave, onClose, categories }) {
     if (!val || !activeCat) return
     const updated = [...(activeCat.filters || ['Barchasi']), val]
     const { error } = await supabase.from('categories').update({ filters: updated }).eq('id', activeCat.id)
-    if (error) { alert('Xato: ' + error.message); return }
+    if (error) {
+      if (error.message.includes('row-level security') || error.code === '42501') {
+        alert('❌ Supabase RLS xatosi! SQL Editor da ishga tushiring:\n\nCREATE POLICY "allow_all" ON categories FOR ALL USING (true) WITH CHECK (true);')
+      } else {
+        alert('Xato: ' + error.message)
+      }
+      return
+    }
     setNewFilterMode(false)
     setNewFilterVal('')
     set('type', val)
+    window.dispatchEvent(new CustomEvent('categories_updated'))
+  }
+
+  const handleDeleteFilter = async (filterVal) => {
+    if (!activeCat) return
+    const updated = (activeCat.filters || []).filter(f => f !== filterVal)
+    const { error } = await supabase.from('categories').update({ filters: updated }).eq('id', activeCat.id)
+    if (error) { alert('Xato: ' + error.message); return }
+    if (form.type === filterVal) set('type', '')
     window.dispatchEvent(new CustomEvent('categories_updated'))
   }
 
@@ -102,7 +143,7 @@ function ProductModal({ product, onSave, onClose, categories }) {
       alert('Nom va narxni kiriting')
       return
     }
-    onSave({ ...form, price: parseInt(form.price) })
+    onSave({ ...form, price: parseInt(form.price), color: form.color || null })
   }
 
   const overlayStyle = {
@@ -163,10 +204,30 @@ function ProductModal({ product, onSave, onClose, categories }) {
           <label style={labelStyle}>KATEGORIYA</label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
             {categories.map(c => (
-              <button key={c.id} type="button"
-                style={form.category === c.id ? chipActive : chipBase}
-                onClick={() => { set('category', c.id); set('type', '') }}
-              >{c.label}</button>
+              <div key={c.id} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
+                className="cat-chip-wrap"
+              >
+                <button type="button"
+                  style={{
+                    ...(form.category === c.id ? chipActive : chipBase),
+                    paddingRight: form.category === c.id ? 28 : 13,
+                  }}
+                  onClick={() => { set('category', c.id); set('type', '') }}
+                >{c.label}</button>
+                {/* X faqat tanlangan (active) chip da ko'rinadi */}
+                {form.category === c.id && (
+                  <span
+                    onClick={(e) => { e.stopPropagation(); handleDeleteCategory(c.id) }}
+                    style={{
+                      position: 'absolute', right: 7, top: '50%', transform: 'translateY(-50%)',
+                      fontSize: '0.65rem', cursor: 'pointer', lineHeight: 1,
+                      color: 'rgba(255,255,255,0.85)',
+                      fontWeight: 700,
+                    }}
+                    title="Kategoriyani o'chirish"
+                  >✕</span>
+                )}
+              </div>
             ))}
             {newCatMode ? (
               <div style={{ display: 'flex', gap: 6, width: '100%', marginTop: 4 }}>
@@ -201,10 +262,28 @@ function ProductModal({ product, onSave, onClose, categories }) {
           <label style={labelStyle}>TURI (katalog filtri)</label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
             {filters.map(f => (
-              <button key={f} type="button"
-                style={form.type === f ? chipActive : chipBase}
-                onClick={() => set('type', f)}
-              >{f}</button>
+              <div key={f} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                <button key={f} type="button"
+                  style={{
+                    ...(form.type === f ? chipActive : chipBase),
+                    paddingRight: form.type === f ? 28 : 13,
+                  }}
+                  onClick={() => set('type', f)}
+                >{f}</button>
+                {/* X faqat tanlangan (active) chip da ko'rinadi */}
+                {form.type === f && (
+                  <span
+                    onClick={(e) => { e.stopPropagation(); handleDeleteFilter(f) }}
+                    style={{
+                      position: 'absolute', right: 7, top: '50%', transform: 'translateY(-50%)',
+                      fontSize: '0.65rem', cursor: 'pointer', lineHeight: 1,
+                      color: 'rgba(255,255,255,0.85)',
+                      fontWeight: 700,
+                    }}
+                    title="Filterni o'chirish"
+                  >✕</span>
+                )}
+              </div>
             ))}
             {newFilterMode ? (
               <div style={{ display: 'flex', gap: 6, width: '100%', marginTop: 4 }}>
@@ -290,6 +369,28 @@ function ProductModal({ product, onSave, onClose, categories }) {
           <label style={labelStyle}>BADGE (ixtiyoriy)</label>
           <input style={inputStyle} placeholder="Masalan: Yangi, Top, -20%" value={form.badge} onChange={e => set('badge', e.target.value)} />
         </div>
+
+        {/* Rang — qogoz/savatcha kategoriyasida ko'rinadi */}
+        {(form.category === 'qogoz' || form.category === 'savatcha') && (
+          <div style={fieldStyle}>
+            <label style={labelStyle}>{form.category === 'savatcha' ? 'SAVATCHA RANGI' : "QOG'OZ RANGI"}</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <input
+                type="color"
+                value={form.color || '#f4c0c0'}
+                onChange={e => set('color', e.target.value)}
+                style={{ width: 48, height: 40, borderRadius: 10, border: '1.5px solid var(--cream-dark)', cursor: 'pointer', padding: 2 }}
+              />
+              <input
+                style={{ ...inputStyle, flex: 1 }}
+                placeholder="#f4c0c0"
+                value={form.color || ''}
+                onChange={e => set('color', e.target.value)}
+              />
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: form.color || '#f4c0c0', border: '1.5px solid var(--cream-dark)', flexShrink: 0 }} />
+            </div>
+          </div>
+        )}
 
         {/* Rasm — galereya tugmasi */}
         <div style={fieldStyle}>
@@ -426,6 +527,15 @@ function Sidebar({ active, onNav }) {
           <path d="M12 2L2 19h20L12 2z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/>
         </svg>
       ), label: 'Ism yozish' },
+    { key: 'bouquet', icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22V13"/>
+          <path d="M12 13C10 11 8 9 8 6.5a4 4 0 0 1 8 0C16 9 14 11 12 13z"/>
+          <path d="M12 13C9 12 6 10 5.5 7"/>
+          <path d="M12 13C15 12 18 10 18.5 7"/>
+          <path d="M8 22h8"/>
+        </svg>
+      ), label: 'Buket terish' },
   ]
   return (
     <aside className="admin-sidebar">
@@ -545,7 +655,8 @@ function OrdersPage({ orders }) {
 function StatsPage({ orders, products }) {
   const total = orders.reduce((s, o) => s + (o.total_price || 0), 0)
   const totalQty = orders.reduce((s, o) => s + (o.total_qty || 0), 0)
-  const dayLabels = ['Ya', 'Du', 'Se', 'Ch', 'Pa', 'Sh', 'Ya']
+  // Hafta kunlari doim shu tartibda: Dushanba → Yakshanba
+  const dayLabels = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya']
   const now = new Date()
   const dayTotals = Array(7).fill(0)
 
@@ -555,7 +666,9 @@ function StatsPage({ orders, products }) {
     const diffMs = now - d
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
     if (diffDays >= 0 && diffDays < 7) {
-      dayTotals[6 - diffDays] += (o.total_price || 0)
+      // getDay(): 0=Yakshanba...6=Shanba -> Du=0,Se=1,Ch=2,Pa=3,Ju=4,Sh=5,Ya=6
+      const idx = (d.getDay() + 6) % 7
+      dayTotals[idx] += (o.total_price || 0)
     }
   })
 
@@ -587,9 +700,8 @@ function StatsPage({ orders, products }) {
         <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text)', marginBottom: '1rem' }}>Oxirgi 7 kun daromadi</div>
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 130 }}>
           {dayTotals.map((val, i) => {
-            const d = new Date(now); d.setDate(d.getDate() - (6 - i))
-            const label = dayLabels[d.getDay()]
-            const h = Math.round((val / maxVal) * 100)
+            const label = dayLabels[i]
+            const h = val ? Math.round(Math.sqrt(val / maxVal) * 100) : 0
             return (
               <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                 <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 600 }}>{val ? Math.round(val / 1000) + 'K' : '—'}</div>
@@ -666,6 +778,7 @@ function HarfAdminPage() {
     setMults(ms => ms.map(m => {
       if (m.id !== id) return m
       if (field === 'label') return { ...m, label: String(val) }
+      if (field === 'image') return { ...m, image: String(val) }
       if (field === 'maxLen') return { ...m, maxLen: val === '' ? null : Number(val) }
       if (field === 'minLen') return { ...m, minLen: val === '' ? '' : Number(val) }
       return { ...m, mult: val === '' ? '' : Number(val) }
@@ -822,6 +935,56 @@ function HarfAdminPage() {
               <div style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--pink)', marginBottom: '0.75rem', letterSpacing: '0.06em' }}>
                 {i === 0 ? 'KICHIK ISM' : i === 1 ? "O'RTA ISM" : 'KATTA ISM'}
               </div>
+              {/* Rasm yuklash */}
+              <div style={{ marginBottom: 10 }}>
+                <label style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 4 }}>PAKET RASMI</label>
+                <input
+                  id={`mult-img-input-${m.id}`}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={e => {
+                    const file = e.target.files?.[0]
+                    if (!file) return
+                    const reader = new FileReader()
+                    reader.onload = ev => setMultField(m.id, 'image', ev.target.result)
+                    reader.readAsDataURL(file)
+                    e.target.value = ''
+                  }}
+                />
+                {m.image ? (
+                  <div style={{ position: 'relative' }}>
+                    <img
+                      src={m.image}
+                      alt={m.label}
+                      style={{ width: '100%', height: 100, objectFit: 'cover', borderRadius: 10, border: '1.5px solid var(--cream-dark)', display: 'block' }}
+                      onError={e => e.target.style.display = 'none'}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setMultField(m.id, 'image', '')}
+                      style={{ position: 'absolute', top: 5, right: 5, width: 24, height: 24, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '0.75rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >✕</button>
+                    <button
+                      type="button"
+                      onClick={() => document.getElementById(`mult-img-input-${m.id}`).click()}
+                      style={{ marginTop: 6, width: '100%', padding: '6px', borderRadius: 8, border: '1.5px dashed var(--cream-dark)', background: 'transparent', fontSize: '0.72rem', color: 'var(--text-muted)', cursor: 'pointer', fontFamily: 'inherit' }}
+                    >🔄 Almashtirish</button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById(`mult-img-input-${m.id}`).click()}
+                    style={{ width: '100%', padding: '18px 10px', borderRadius: 10, border: '2px dashed var(--cream-dark)', background: 'var(--white)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'inherit', transition: 'border-color .15s' }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--pink)'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--cream-dark)'}
+                  >
+                    <span style={{ fontSize: '1.4rem' }}>📷</span>
+                    <span style={{ fontWeight: 600 }}>Rasm tanlash</span>
+                  </button>
+                )}
+              </div>
+
               <div style={{ marginBottom: 8 }}>
                 <label style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: 4 }}>NOM</label>
                 <input style={inp} value={m.label} onChange={e => setMultField(m.id, 'label', e.target.value)} />
@@ -885,6 +1048,413 @@ function HarfAdminPage() {
           * Ism uzunligiga qarab narx avtomatik hisoblanadi. Yuqoridagi koeffitsientlarni o'zgartirib, "Saqlash"ni bosing.
         </p>
       </div>
+    </div>
+  )
+}
+
+// ─── BOUQUET ITEM MODAL (Gul, Qog'oz yoki Savatcha uchun maxsus) ──
+function BouquetItemModal({ type, item, onSave, onClose }) {
+  // type: 'flower' | 'paper' | 'basket'
+  const isFlower = type === 'flower'
+  const isBasket = type === 'basket'
+
+  const FLOWER_COLORS = {
+    lola:    { bg: '#EFF6FF', stroke: '#3B82F6', label: "Ko'k (Lola)"        },
+    atirgul: { bg: '#FFF1F2', stroke: '#F43F5E', label: 'Qizil (Atirgul)'    },
+    pion:    { bg: '#FAF5FF', stroke: '#A855F7', label: 'Binafsha (Pion)'    },
+    tulpan:  { bg: '#ECFDF5', stroke: '#10B981', label: 'Yashil (Tulpan)'    },
+    nargiz:  { bg: '#FEFCE8', stroke: '#EAB308', label: 'Sariq (Nargiz)'     },
+    gilos:   { bg: '#FFF7ED', stroke: '#F97316', label: "To'q sariq (Gilos)" },
+    aralash: { bg: '#F0FDF4', stroke: '#22C55E', label: 'Yashil (Aralash)'   },
+  }
+
+  const [form, setForm] = useState({
+    name:     item?.name     || '',
+    price:    item?.price    || '',
+    emoji:    item?.emoji    || (isFlower ? '🌸' : isBasket ? '🧺' : '📦'),
+    desc:     item?.desc     || '',
+    imageUrl: item?.imageUrl || '',
+    color:    item?.color    || '#f4c0c0',
+    imgClass: item?.imgClass || 'atirgul',
+    type:     item?.type     || '',
+    stock:    item?.stock    ?? true,
+  })
+  const [saving, setSaving] = useState(false)
+
+  const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+
+  const inp = {
+    width: '100%', padding: '10px 13px', borderRadius: 11,
+    border: '1.5px solid var(--cream-dark)', fontSize: '0.88rem',
+    color: 'var(--text)', background: 'var(--white)',
+    fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box',
+  }
+  const lbl = {
+    fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-muted)',
+    letterSpacing: '0.05em', display: 'block', marginBottom: 5,
+  }
+  const field = { marginBottom: '1rem' }
+
+  const handleImgFile = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = ev => set('imageUrl', ev.target.result)
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  const handleSave = async () => {
+    if (!form.name.trim() || !form.price) { alert("Nom va narxni kiriting"); return }
+    setSaving(true)
+    try {
+      await onSave({
+        ...form,
+        price: parseInt(form.price),
+        category: isFlower ? 'donalik' : isBasket ? 'savatcha' : 'qogoz',
+        color: isFlower ? null : (form.color || '#f4c0c0'),
+      })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const activeColors = FLOWER_COLORS[form.imgClass] || FLOWER_COLORS.atirgul
+
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
+      onClick={onClose}
+    >
+      <div
+        style={{ background: 'var(--white)', borderRadius: 20, padding: '1.75rem', width: 420, maxWidth: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 40px rgba(0,0,0,0.18)' }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+          <div>
+            <p style={{ fontSize: '0.68rem', letterSpacing: '0.12em', color: 'var(--pink)', fontWeight: 700, marginBottom: 3 }}>
+              {isFlower ? 'BUKET TERISH — GUL' : isBasket ? 'BUKET TERISH — SAVATCHA' : "BUKET TERISH — QOG'OZ"}
+            </p>
+            <h3 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)', margin: 0 }}>
+              {item
+                ? (isFlower ? 'Gulni tahrirlash' : isBasket ? 'Savatchani tahrirlash' : "Qog'ozni tahrirlash")
+                : (isFlower ? 'Yangi gul qo\'shish' : isBasket ? 'Yangi savatcha qo\'shish' : "Yangi qog'oz qo'shish")}
+            </h3>
+          </div>
+          <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: '50%', border: '1.5px solid var(--cream-dark)', background: 'transparent', cursor: 'pointer', fontSize: '1rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+        </div>
+
+        {/* Rasm */}
+        <div style={field}>
+          <label style={lbl}>RASM {isFlower ? '(ixtiyoriy)' : '(ixtiyoriy)'}</label>
+          <input id="bouquet-img-input" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImgFile} />
+          {form.imageUrl ? (
+            <div style={{ position: 'relative' }}>
+              <img
+                src={form.imageUrl} alt="preview"
+                style={{ width: '100%', height: 140, objectFit: isFlower ? 'cover' : 'contain', borderRadius: 12, border: '1.5px solid var(--cream-dark)', display: 'block', background: 'var(--cream)' }}
+                onError={e => e.target.style.display = 'none'}
+              />
+              <button type="button" onClick={() => set('imageUrl', '')}
+                style={{ position: 'absolute', top: 7, right: 7, width: 28, height: 28, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+              <button type="button" onClick={() => document.getElementById('bouquet-img-input').click()}
+                style={{ marginTop: 6, width: '100%', padding: '8px', borderRadius: 10, border: '1.5px dashed var(--cream-dark)', background: 'transparent', fontSize: '0.78rem', color: 'var(--text-muted)', cursor: 'pointer', fontFamily: 'inherit' }}>🔄 Almashtirish</button>
+            </div>
+          ) : (
+            <button type="button" onClick={() => document.getElementById('bouquet-img-input').click()}
+              style={{ width: '100%', padding: '22px 16px', borderRadius: 12, border: '2px dashed var(--cream-dark)', background: 'var(--cream)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, fontSize: '0.82rem', color: 'var(--text-muted)', fontFamily: 'inherit', transition: 'border-color .15s' }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--pink)'}
+              onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--cream-dark)'}
+            >
+              <span style={{ fontSize: '1.8rem' }}>{isFlower ? '🌸' : isBasket ? '🧺' : '📦'}</span>
+              <span style={{ fontWeight: 600 }}>Rasm tanlash</span>
+              <span style={{ fontSize: '0.72rem' }}>JPG, PNG, WEBP</span>
+            </button>
+          )}
+        </div>
+
+        {/* Nom */}
+        <div style={field}>
+          <label style={lbl}>NOMI *</label>
+          <input style={inp} placeholder={isFlower ? 'Masalan: Qizil atirgul' : isBasket ? 'Masalan: Yog\'och savatcha' : "Masalan: Kraft qog'oz"} value={form.name} onChange={e => set('name', e.target.value)} />
+        </div>
+
+        {/* Narx */}
+        <div style={field}>
+          <label style={lbl}>NARXI (SO'M) *</label>
+          <input style={inp} type="number" placeholder={isFlower ? '12000' : isBasket ? '25000' : '8000'} value={form.price} onChange={e => set('price', e.target.value)} />
+        </div>
+
+        {/* Tavsif */}
+        <div style={field}>
+          <label style={lbl}>TAVSIF (ixtiyoriy)</label>
+          <textarea style={{ ...inp, height: 64, resize: 'vertical' }} placeholder={isFlower ? 'Gul haqida qisqa tavsif...' : isBasket ? 'Savatcha haqida qisqa tavsif...' : "Qog'oz haqida qisqa tavsif..."} value={form.desc} onChange={e => set('desc', e.target.value)} />
+        </div>
+
+        {/* Savatcha uchun: o'lcham (ixtiyoriy) */}
+        {isBasket && (
+          <div style={field}>
+            <label style={lbl}>O'LCHAM (ixtiyoriy)</label>
+            <input style={inp} placeholder="Masalan: Kichik / O'rta / Katta" value={form.type} onChange={e => set('type', e.target.value)} />
+          </div>
+        )}
+
+        {/* Gul uchun: karta rangi */}
+        {isFlower && (
+          <div style={field}>
+            <label style={lbl}>KARTA RANGI</label>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
+              {Object.entries(FLOWER_COLORS).map(([id, c]) => (
+                <div key={id} onClick={() => set('imgClass', id)}
+                  style={{ padding: '7px 6px', borderRadius: 10, cursor: 'pointer', textAlign: 'center', fontSize: '0.68rem', fontWeight: 700, background: c.bg, color: c.stroke, border: form.imgClass === id ? `2px solid ${c.stroke}` : `1.5px solid ${c.bg}`, transition: 'all .15s' }}>
+                  {c.label.split('(')[0].trim()}
+                </div>
+              ))}
+            </div>
+            {/* Preview */}
+            <div style={{ marginTop: 8, padding: '8px 12px', background: activeColors.bg, borderRadius: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: '1.2rem' }}>{form.emoji || '🌸'}</span>
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: activeColors.stroke }}>{form.name || 'Gul nomi'}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Qog'oz/Savatcha uchun: rang tanlov */}
+        {!isFlower && (
+          <div style={field}>
+            <label style={lbl}>{isBasket ? 'SAVATCHA RANGI' : "QOG'OZ RANGI"}</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <input type="color" value={form.color || '#f4c0c0'} onChange={e => set('color', e.target.value)}
+                style={{ width: 48, height: 40, borderRadius: 10, border: '1.5px solid var(--cream-dark)', cursor: 'pointer', padding: 2 }} />
+              <input style={{ ...inp, flex: 1 }} placeholder="#f4c0c0" value={form.color || ''} onChange={e => set('color', e.target.value)} />
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: form.color || '#f4c0c0', border: '1.5px solid var(--cream-dark)', flexShrink: 0 }} />
+            </div>
+            {/* Rangning preview'i */}
+            <div style={{ marginTop: 8, padding: '10px 14px', borderRadius: 10, background: form.color || '#f4c0c0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#fff', textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>{form.name || (isBasket ? 'Savatcha nomi' : "Qog'oz nomi")}</span>
+              <span style={{ fontSize: '0.75rem', color: '#fff', opacity: 0.85, textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>{form.price ? fmt(parseInt(form.price) || 0) : '—'}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Emoji */}
+        <div style={field}>
+          <label style={lbl}>EMOJI</label>
+          <input style={{ ...inp, fontSize: '1.2rem' }} placeholder={isFlower ? '🌸' : '📦'} value={form.emoji} onChange={e => set('emoji', e.target.value)} maxLength={4} />
+        </div>
+
+        {/* Mavjudligi */}
+        <div style={field}>
+          <label style={lbl}>MAVJUDLIGI</label>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {[{ val: true, label: '✓ Mavjud' }, { val: false, label: '✗ Tugagan' }].map(opt => (
+              <div key={String(opt.val)} onClick={() => set('stock', opt.val)}
+                style={{ flex: 1, padding: '9px', borderRadius: 11, cursor: 'pointer', textAlign: 'center', fontSize: '0.82rem', fontWeight: 600,
+                  border: form.stock === opt.val ? '2px solid var(--pink)' : '1.5px solid var(--cream-dark)',
+                  background: form.stock === opt.val ? 'var(--pink-pale)' : 'var(--white)',
+                  color: form.stock === opt.val ? 'var(--pink)' : 'var(--text-muted)', transition: 'all .15s' }}>
+                {opt.label}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Tugmalar */}
+        <div style={{ display: 'flex', gap: 8, marginTop: '1.25rem' }}>
+          <button onClick={onClose}
+            style={{ flex: 1, padding: '11px', background: 'transparent', border: '1.5px solid var(--cream-dark)', borderRadius: 12, fontSize: '0.88rem', cursor: 'pointer', color: 'var(--text-muted)', fontFamily: 'inherit' }}>
+            Bekor
+          </button>
+          <button onClick={handleSave} disabled={saving}
+            style={{ flex: 2, padding: '11px', background: saving ? 'var(--cream-dark)' : 'var(--pink)', border: 'none', borderRadius: 12, fontSize: '0.88rem', fontWeight: 600, cursor: saving ? 'default' : 'pointer', color: '#fff', fontFamily: 'inherit' }}>
+            {saving ? 'Saqlanmoqda...' : (item ? 'Saqlash' : "Qo'shish")}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── BOUQUET ADMIN PAGE ──────────────────────────────────────────
+function BouquetAdminPage({ products, onProductsChange, onDelete }) {
+  const [activeTab, setActiveTab] = useState('flowers')
+  // Ichki modal: null | 'new-flower' | 'new-paper' | {item obj} (tahrirlash)
+  const [bouquetModal, setBouquetModal] = useState(null)
+  const [savedTip, setSavedTip] = useState(false)
+
+  const donalikItems = products.filter(p => p.category === 'donalik')
+  const qogozItems   = products.filter(p => p.category === 'qogoz')
+  const savatchaItems = products.filter(p => p.category === 'savatcha')
+  const items = activeTab === 'flowers' ? donalikItems : activeTab === 'papers' ? qogozItems : savatchaItems
+
+  const CAT_COLORS_LOCAL = {
+    lola:    { bg: '#EFF6FF', stroke: '#3B82F6' },
+    atirgul: { bg: '#FFF1F2', stroke: '#F43F5E' },
+    pion:    { bg: '#FAF5FF', stroke: '#A855F7' },
+    tulpan:  { bg: '#ECFDF5', stroke: '#10B981' },
+    nargiz:  { bg: '#FEFCE8', stroke: '#EAB308' },
+    gilos:   { bg: '#FFF7ED', stroke: '#F97316' },
+    aralash: { bg: '#F0FDF4', stroke: '#22C55E' },
+  }
+
+  const handleBouquetSave = async (data) => {
+    try {
+      const isEditing = bouquetModal && typeof bouquetModal === 'object' && bouquetModal.id
+      let result
+      if (isEditing) {
+        result = await upsertProduct({ ...bouquetModal, ...data })
+        onProductsChange(ps => ps.map(p => p.id === result.id ? result : p))
+      } else {
+        result = await upsertProduct({ ...data, emoji: data.emoji || '🌸' })
+        onProductsChange(ps => [result, ...ps])
+      }
+      setBouquetModal(null)
+      setSavedTip(true)
+      setTimeout(() => setSavedTip(false), 2500)
+    } catch (err) {
+      alert('Xato: ' + err.message)
+    }
+  }
+
+  // Modal turi aniqlash
+  const modalType = bouquetModal === 'new-flower' ? 'flower'
+    : bouquetModal === 'new-paper' ? 'paper'
+    : bouquetModal === 'new-basket' ? 'basket'
+    : bouquetModal?.category === 'donalik' ? 'flower'
+    : bouquetModal?.category === 'qogoz' ? 'paper'
+    : bouquetModal?.category === 'savatcha' ? 'basket'
+    : null
+
+  return (
+    <div>
+      {/* Saqlandi tip */}
+      {savedTip && (
+        <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 999, background: '#6a9e5a', color: '#fff', padding: '12px 20px', borderRadius: 14, fontSize: '0.88rem', fontWeight: 600, boxShadow: '0 4px 20px rgba(0,0,0,0.18)' }}>
+          ✓ {activeTab === 'flowers' ? 'Gul' : activeTab === 'papers' ? "Qog'oz" : 'Savatcha'} saqlandi!
+        </div>
+      )}
+
+      <div className="admin-page-header" style={{ marginBottom: '1.25rem' }}>
+        <div>
+          <p style={{ fontSize: '0.7rem', letterSpacing: '0.16em', color: 'var(--pink)', fontWeight: 600, marginBottom: 4 }}>ADMIN PANEL</p>
+          <h2 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '1.6rem', fontWeight: 700, color: 'var(--text)' }}>Buket terish</h2>
+        </div>
+        <button
+          onClick={() => setBouquetModal(activeTab === 'flowers' ? 'new-flower' : activeTab === 'papers' ? 'new-paper' : 'new-basket')}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 18px', background: 'var(--pink)', color: '#fff', border: 'none', borderRadius: 13, fontSize: '0.88rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
+        >
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Yangi {activeTab === 'flowers' ? 'gul' : activeTab === 'papers' ? "qog'oz" : 'savatcha'}
+        </button>
+      </div>
+
+      {/* Tab */}
+      <div className="admin-bouquet-tabs" style={{ display: 'flex', gap: 8, marginBottom: '1rem', flexWrap: 'wrap' }}>
+        {[
+          { key: 'flowers',  label: `🌸 Donalik gullar`, count: donalikItems.length },
+          { key: 'papers',   label: `📦 Qog'ozlar`,       count: qogozItems.length   },
+          { key: 'baskets',  label: `🧺 Savatchalar`,     count: savatchaItems.length },
+        ].map(t => (
+          <button key={t.key} onClick={() => setActiveTab(t.key)}
+            style={{ padding: '8px 20px', borderRadius: 20, fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer', border: 'none', fontFamily: 'inherit', whiteSpace: 'nowrap',
+              background: activeTab === t.key ? 'var(--pink)' : 'var(--cream-dark)',
+              color: activeTab === t.key ? '#fff' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            {t.label}
+            <span style={{ background: activeTab === t.key ? 'rgba(255,255,255,0.25)' : 'var(--white)', borderRadius: 20, padding: '1px 8px', fontSize: '0.72rem', fontWeight: 700 }}>{t.count}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Ro'yxat */}
+      <div style={{ background: 'var(--white)', borderRadius: 18, border: '1px solid var(--cream-dark)', overflow: 'hidden' }}>
+        {items.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)', fontSize: '0.88rem' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>{activeTab === 'flowers' ? '🌿' : activeTab === 'papers' ? '📦' : '🧺'}</div>
+            <p style={{ fontWeight: 600, marginBottom: 6 }}>{activeTab === 'flowers' ? "Donalik gul yo'q" : activeTab === 'papers' ? "Qog'oz yo'q" : "Savatcha yo'q"}</p>
+            <p style={{ fontSize: '0.78rem', marginBottom: '1.25rem' }}>Yuqoridagi tugma orqali qo'shing</p>
+            <button onClick={() => setBouquetModal(activeTab === 'flowers' ? 'new-flower' : activeTab === 'papers' ? 'new-paper' : 'new-basket')}
+              style={{ padding: '10px 22px', borderRadius: 12, background: 'var(--pink)', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', fontSize: '0.85rem' }}>
+              + Yangi {activeTab === 'flowers' ? 'gul' : activeTab === 'papers' ? "qog'oz" : 'savatcha'} qo'shish
+            </button>
+          </div>
+        ) : items.map((p, i) => {
+          const colors = CAT_COLORS_LOCAL[p.imgClass] || { bg: '#FFF1F2', stroke: '#F43F5E' }
+          const isFlowerTab = activeTab === 'flowers'
+          const isSwatchTab = activeTab === 'papers' || activeTab === 'baskets' // color-swatch turlari
+          return (
+            <div key={p.id} className="product-row" style={{ borderBottom: i < items.length - 1 ? '1px solid var(--cream-dark)' : 'none' }}>
+              {/* Thumbnail */}
+              <div style={{
+                width: 48, height: 48, borderRadius: 11, flexShrink: 0, overflow: 'hidden',
+                background: isSwatchTab ? (p.color || '#e8c4c4') : colors.bg,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                border: isSwatchTab ? 'none' : `1.5px solid ${colors.stroke}22`,
+              }}>
+                {p.imageUrl ? (
+                  <img src={p.imageUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => e.target.style.display='none'} />
+                ) : isFlowerTab ? (
+                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: colors.stroke }}>{p.imgClass?.slice(0,3).toUpperCase()}</span>
+                ) : null}
+              </div>
+
+              <div className="product-row-info">
+                <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>{p.emoji || (isFlowerTab ? '🌸' : activeTab === 'papers' ? '📦' : '🧺')}</span>
+                  {p.name}
+                </div>
+                <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: 3, display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+                  {isFlowerTab && p.type && (
+                    <span style={{ background: colors.bg, color: colors.stroke, padding: '1px 7px', borderRadius: 10, fontWeight: 600 }}>{p.type}</span>
+                  )}
+                  {activeTab === 'baskets' && p.type && (
+                    <span style={{ background: '#FEFCE8', color: '#A16207', padding: '1px 7px', borderRadius: 10, fontWeight: 600 }}>{p.type}</span>
+                  )}
+                  {isSwatchTab && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ width: 10, height: 10, borderRadius: '50%', background: p.color || '#e8c4c4', display: 'inline-block', border: '1px solid rgba(0,0,0,0.12)' }} />
+                      {p.color}
+                    </span>
+                  )}
+                  <span style={{ color: p.stock ? '#6a9e5a' : '#e05c6a', fontWeight: 600 }}>{p.stock ? '✓ Mavjud' : '✗ Tugagan'}</span>
+                </div>
+              </div>
+
+              <div className="product-row-right">
+                <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text)', flexShrink: 0, minWidth: 90, textAlign: 'right' }}>
+                  {fmt(p.price)}
+                </div>
+                <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                  <button onClick={() => setBouquetModal(p)}
+                    style={{ padding: '7px 11px', borderRadius: 10, border: '1.5px solid var(--cream-dark)', background: 'var(--white)', cursor: 'pointer', color: 'var(--text-muted)', fontFamily: 'inherit' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                  </button>
+                  <button onClick={() => onDelete(p.id)}
+                    style={{ padding: '7px 11px', borderRadius: 10, border: '1.5px solid var(--cream-dark)', background: 'var(--white)', cursor: 'pointer', color: '#e05c6a', fontFamily: 'inherit' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+                      <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Modal */}
+      {bouquetModal && modalType && (
+        <BouquetItemModal
+          type={modalType}
+          item={typeof bouquetModal === 'object' && bouquetModal.id ? bouquetModal : null}
+          onSave={handleBouquetSave}
+          onClose={() => setBouquetModal(null)}
+        />
+      )}
     </div>
   )
 }
@@ -1114,14 +1684,16 @@ export default function Admin() {
 
   const handleSave = async (data) => {
     try {
-      if (modal && modal !== 'add') {
+      if (modal && modal !== 'add' && typeof modal !== 'string') {
         // Tahrirlash
         const updated = await upsertProduct({ ...modal, ...data })
         setProducts(ps => ps.map(p => p.id === updated.id ? updated : p))
       } else {
         // Yangi mahsulot — id yo'q, Supabase o'zi beradi
         const { id: _skip, ...rest } = data
-        const created = await upsertProduct({ ...rest, emoji: '🌸' })
+        // Agar modal string bo'lsa — kategoriya berilgan (bouquet add)
+        const extraCategory = typeof modal === 'string' && modal !== 'add' ? { category: modal } : {}
+        const created = await upsertProduct({ ...rest, ...extraCategory, emoji: '🌸' })
         setProducts(ps => [created, ...ps])
       }
       setModal(null)
@@ -1173,6 +1745,13 @@ export default function Admin() {
             {page === 'orders'   && <OrdersPage orders={orders} />}
             {page === 'stats'    && <StatsPage orders={orders} products={products} />}
             {page === 'harf'     && <HarfAdminPage />}
+            {page === 'bouquet'  && (
+              <BouquetAdminPage
+                products={products}
+                onProductsChange={setProducts}
+                onDelete={handleDelete}
+              />
+            )}
             {page === 'products' && (
               <ProductsPage
                 products={products}
@@ -1187,7 +1766,8 @@ export default function Admin() {
 
       {modal && (
         <ProductModal
-          product={modal === 'add' ? null : modal}
+          product={modal === 'add' || typeof modal === 'string' ? null : modal}
+          defaultCategory={typeof modal === 'string' && modal !== 'add' ? modal : undefined}
           onSave={handleSave}
           onClose={() => setModal(null)}
           categories={categories}

@@ -166,7 +166,7 @@ export default function Checkout({ cartItems, onClearCart }) {
 
   // ── Telegram sozlamalari ──────────────────────────────────────
   const TELEGRAM_BOT_TOKEN = '8607230995:AAGpf3a4_5xiiT0E64tui0QuvmYmalY0Mm8'
-  const TELEGRAM_CHAT_ID   = 'CHAT_ID_NI_SHU_YERGA_QO\'YING'
+  const TELEGRAM_CHAT_ID   = '5619984697'
 
   const sendTelegramMessage = async (orderNum) => {
     const deliveryText =
@@ -178,37 +178,154 @@ export default function Checkout({ cartItems, onClearCart }) {
       form.payment === 'card' ? '💳 Plastik karta' : '❓ Tanlanmagan'
 
     const itemsText = cartItems
-      .map(i => `  • ${i.name} × ${i.qty} = ${formatPrice(i.price * i.qty)}`)
+      .map(i => {
+        if (i.isBouquet) {
+          let line = `  💐 Maxsus Buket — ${formatPrice(i.price)}`
+          if (i.flowers && i.flowers.length > 0) {
+            const flowerList = i.flowers.map(f => `${f.emoji || '🌸'} ${f.name}${f.qty ? ` ×${f.qty}` : ''}`).join(', ')
+            line += `\n    🌺 Gullar: ${flowerList}`
+          }
+          if (i.wrapping) line += `\n    🎀 O'rash: ${i.wrapping}`
+          if (i.note) line += `\n    📝 Izoh: ${i.note}`
+          return line
+        }
+        let line = `  • ${i.name} × ${i.qty} = ${formatPrice(i.price * i.qty)}`
+        if (i.harfNote) line += `\n    ✍️ ${i.harfNote}`
+        return line
+      })
       .join('\n')
 
-    const message = [
-      `🌸 *YANGI BUYURTMA #${orderNum}*`,
+    const caption = [
+      `🌸 YANGI BUYURTMA #${orderNum}`,
       ``,
-      `👤 *Mijoz:* ${form.firstName} ${form.lastName}`,
-      `📞 *Telefon:* +998${form.phone}`,
+      `👤 Mijoz: ${form.firstName} ${form.lastName}`,
+      `📞 Telefon: +998${form.phone}`,
       ``,
-      `🛒 *Mahsulotlar:*`,
+      `🛒 Mahsulotlar:`,
       itemsText,
       ``,
-      `💰 *Jami:* ${formatPrice(cartItems.reduce((s, i) => s + i.price * i.qty, 0))}`,
+      `💰 Jami: ${formatPrice(cartItems.reduce((s, i) => s + i.price * i.qty, 0))}`,
       ``,
       deliveryText,
-      `💳 *To'lov:* ${paymentText}`,
-      form.note ? `\n📝 *Izoh:* ${form.note}` : '',
+      `💳 To'lov: ${paymentText}`,
+      form.note ? `\n📝 Umumiy izoh: ${form.note}` : '',
     ].filter(Boolean).join('\n')
 
+    const BASE = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`
+
+    // Blob yuklab olish helper
+    const tryFetchBlob = async (url) => {
+      try {
+        const r = await fetch(url)
+        if (!r.ok) return null
+        return r.blob()
+      } catch {
+        return null
+      }
+    }
+
     try {
-      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text: message,
-          parse_mode: 'Markdown',
-        }),
-      })
+      // ── Buket itemlari uchun barcha rasmlarni yig'ish ──
+      // Gullar rasmlari + qog'oz/savatcha rasmi
+      const allPhotoUrls = []
+
+      for (const item of cartItems) {
+        if (item.isBouquet) {
+          // Har bir gul rasmi
+          if (item.flowers && item.flowers.length > 0) {
+            for (const f of item.flowers) {
+              if (f.imageUrl) allPhotoUrls.push(f.imageUrl)
+            }
+          }
+          // Qog'oz / savatcha rasmi
+          if (item.bouquetDetails?.paper?.imageUrl) {
+            allPhotoUrls.push(item.bouquetDetails.paper.imageUrl)
+          }
+        } else {
+          // Oddiy mahsulot rasmi
+          if (item.imageUrl) allPhotoUrls.push(item.imageUrl)
+        }
+      }
+
+      // Takrorlarni olib tashlash, max 10 ta
+      const uniqueUrls = [...new Set(allPhotoUrls)].slice(0, 10)
+
+      if (uniqueUrls.length === 0) {
+        // Rasm yo'q — oddiy text
+        const res2 = await fetch(`${BASE}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: caption }),
+        })
+        const data2 = await res2.json()
+        if (!data2.ok) console.error('Telegram xato:', data2.description)
+        return
+      }
+
+      // ── Bloblarni yuklab olish ──
+      const blobs = []
+      for (const url of uniqueUrls) {
+        const blob = await tryFetchBlob(url)
+        if (blob) blobs.push(blob)
+      }
+
+      if (blobs.length === 0) {
+        // Bloblar yuklanmadi — oddiy text
+        await fetch(`${BASE}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: caption }),
+        })
+        return
+      }
+
+      if (blobs.length === 1) {
+        // Bitta rasm — sendPhoto
+        const fd = new FormData()
+        fd.append('chat_id', TELEGRAM_CHAT_ID)
+        fd.append('caption', caption)
+        fd.append('photo', blobs[0], 'photo_0.jpg')
+        const res2 = await fetch(`${BASE}/sendPhoto`, { method: 'POST', body: fd })
+        const data2 = await res2.json()
+        if (!data2.ok) {
+          // sendPhoto ishlamasa text yuboramiz
+          await fetch(`${BASE}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: caption }),
+          })
+        }
+      } else {
+        // Ko'p rasm — sendMediaGroup (albumga)
+        const fd = new FormData()
+        fd.append('chat_id', TELEGRAM_CHAT_ID)
+
+        const mediaArr = blobs.map((blob, idx) => {
+          const fieldName = `photo_${idx}`
+          fd.append(fieldName, blob, `${fieldName}.jpg`)
+          return {
+            type: 'photo',
+            media: `attach://${fieldName}`,
+            // Caption faqat birinchi rasmda
+            ...(idx === 0 ? { caption } : {}),
+          }
+        })
+
+        fd.append('media', JSON.stringify(mediaArr))
+        const res2 = await fetch(`${BASE}/sendMediaGroup`, { method: 'POST', body: fd })
+        const data2 = await res2.json()
+        if (!data2.ok) {
+          console.error('sendMediaGroup xato:', data2.description)
+          // Fallback — text xabar
+          await fetch(`${BASE}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: caption }),
+          })
+        }
+      }
     } catch (err) {
-      console.error('Telegram xabar yuborishda xato:', err)
+      console.error('❌ Telegram xabar yuborishda xato:', err)
     }
   }
 
@@ -459,15 +576,56 @@ export default function Checkout({ cartItems, onClearCart }) {
             {/* Items */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem' }}>
               {cartItems.map(item => (
-                <div key={item.id} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                  <div style={{ width: 46, height: 46, borderRadius: 10, overflow: 'hidden', flexShrink: 0, background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <FlowerImg src={item.imageUrl} alt={item.name} emoji={item.emoji} />
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</p>
-                    <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0 }}>{item.qty} × {formatPrice(item.price)}</p>
-                  </div>
-                  <p style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)', flexShrink: 0, margin: 0 }}>{formatPrice(item.price * item.qty)}</p>
+                <div key={item.id}>
+                  {item.isBouquet ? (
+                    /* ── Buket terish itemlari ── */
+                    <div style={{ background: 'var(--cream)', borderRadius: 12, padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {/* Buket header */}
+                      <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start' }}>
+                        {/* Rasm yoki emoji */}
+                        <div style={{ width: 54, height: 54, borderRadius: 10, overflow: 'hidden', flexShrink: 0, background: 'var(--cream-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {item.imageUrl ? (
+                            <FlowerImg src={item.imageUrl} alt={item.name} emoji={item.emoji || '💐'} />
+                          ) : (
+                            <span style={{ fontSize: '2rem' }}>💐</span>
+                          )}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--pink)', margin: '0 0 2px', display: 'flex', alignItems: 'center', gap: 4 }}>
+                            🌸 Maxsus Buket
+                          </p>
+                          <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text)', margin: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
+                          {item.wrapping && (
+                            <p style={{ fontSize: '0.68rem', color: 'var(--text-muted)', margin: 0 }}>🎀 {item.wrapping}</p>
+                          )}
+                        </div>
+                        <p style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text)', flexShrink: 0, margin: 0 }}>{formatPrice(item.price)}</p>
+                      </div>
+
+                      {/* Tanlangan gullar ro'yxati */}
+                      {item.flowers && item.flowers.length > 0 && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem', paddingTop: '0.4rem', borderTop: '1px solid var(--cream-dark)' }}>
+                          {item.flowers.map((f, idx) => (
+                            <span key={idx} style={{ fontSize: '0.65rem', background: 'var(--white)', borderRadius: 6, padding: '2px 7px', color: 'var(--text-muted)', border: '1px solid var(--cream-dark)', display: 'flex', alignItems: 'center', gap: 3 }}>
+                              {f.emoji || '🌸'} {f.name} {f.qty ? `×${f.qty}` : ''}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* ── Oddiy itemlar ── */
+                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                      <div style={{ width: 46, height: 46, borderRadius: 10, overflow: 'hidden', flexShrink: 0, background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <FlowerImg src={item.imageUrl} alt={item.name} emoji={item.emoji} />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</p>
+                        <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0 }}>{item.qty} × {formatPrice(item.price)}</p>
+                      </div>
+                      <p style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)', flexShrink: 0, margin: 0 }}>{formatPrice(item.price * item.qty)}</p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

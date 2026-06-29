@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
+import Loader from '../components/Loader'
 import './Catalog.css'
 
 const DEFAULT_HARF_PKGS = [
@@ -347,10 +349,11 @@ function ProductCard({ product, isDona, onSelect, liked, onToggleLike, onAddToCa
 // ─── HARF CATEGORY CARD (katalogda ko'rinadigan karta) ───────────
 // ─── HARF INLINE SECTION ────────────────────────────────────────
 function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
-  const [mode, setMode]       = useState(null)   // null | 'harf' | 'ism'
-  const [ismText, setIsmText] = useState('')
+  const [mode, setMode]         = useState(null)   // null | 'harf' | 'ism'
+  const [ismText, setIsmText]   = useState('')
+  const [harfText, setHarfText] = useState('')      // qaysi harf yozilishi
   const [selected, setSelected] = useState(null)
-  const [added, setAdded]     = useState(false)
+  const [added, setAdded]       = useState(false)
 
   const trimmed = ismText.trim()
   const nameLen = trimmed.replace(/\s/g, '').length
@@ -373,10 +376,26 @@ function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
 
   const handleAdd = () => {
     if (!selectedPkg) return
-    const name = mode === 'ism' && trimmed
-      ? `Ism: "${trimmed}" — ${selectedPkg.label} paket`
-      : `Harf yozish — ${selectedPkg.label} paket`
-    onAdd({ id: `harf_${selected}_${Date.now()}`, name, price: selectedPkg.price, emoji: '🌹', category: 'harf' }, 1)
+    let name
+    if (mode === 'ism' && trimmed) {
+      name = `Ism: "${trimmed}" — ${selectedPkg.label} paket`
+    } else if (mode === 'harf' && harfText.trim()) {
+      name = `Harf: "${harfText.trim().toUpperCase()}" — ${selectedPkg.label} paket`
+    } else {
+      name = `Harf yozish — ${selectedPkg.label} paket`
+    }
+    onAdd({
+      id: `harf_${selected}_${Date.now()}`,
+      name,
+      price: selectedPkg.price,
+      emoji: '🌹',
+      category: 'harf',
+      harfNote: mode === 'ism'
+        ? `Ism yozish: "${trimmed}"`
+        : harfText.trim()
+          ? `Harf yozish: "${harfText.trim().toUpperCase()}"`
+          : 'Harf yozish',
+    }, 1)
     setAdded(true)
     setTimeout(() => setAdded(false), 1500)
   }
@@ -385,10 +404,12 @@ function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
     setMode(newMode)
     setSelected(null)
     setIsmText('')
+    setHarfText('')
     setAdded(false)
   }
 
-  const showPackages = mode === 'harf' || (mode === 'ism' && !!multInfo)
+  // Harf rejimida: harf kiritilsa paketlar ko'rinadi
+  const showPackages = (mode === 'harf' && harfText.trim().length > 0) || (mode === 'ism' && !!multInfo)
 
   return (
     <div className="harf-inline-wrap">
@@ -414,6 +435,28 @@ function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
           <span className="harf-inline-btn-from">225 000 so'mdan</span>
         </button>
       </div>
+
+      {/* Harf input */}
+      {mode === 'harf' && (
+        <div className="harf-inline-ism-wrap">
+          <label className="harf-inline-ism-label">QAYSI HARF YOZILSIN?</label>
+          <input
+            className="harf-inline-ism-input"
+            placeholder="Masalan: A, O, Z ..."
+            value={harfText}
+            onChange={e => { setHarfText(e.target.value); setSelected(null) }}
+            maxLength={5}
+            autoFocus
+            style={{ textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '1.2rem', fontWeight: 700 }}
+          />
+          {harfText.trim().length === 0 && (
+            <p className="harf-modal-hint warn">⚠ Harf kiriting — paketlar ko'rinadi</p>
+          )}
+          {harfText.trim().length > 0 && (
+            <p className="harf-modal-hint ok">✦ "{harfText.trim().toUpperCase()}" harfi tanlandi</p>
+          )}
+        </div>
+      )}
 
       {/* Ism input */}
       {mode === 'ism' && (
@@ -506,23 +549,32 @@ function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
 }
 
 // ─── CATALOG PAGE ───────────────────────────────────────────────
-export default function Catalog({ likedIds, onToggleLike, onAddToCart }) {
-  const [categories, setCategories] = useState([])
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
+export default function Catalog({ likedIds, onToggleLike, onAddToCart, catalogData, catalogLoading }) {
+  const navigate = useNavigate()
+
+  // Agar ma'lumot App.jsx dan props orqali kelsa — qayta fetch yo'q
+  const hasExternalData = catalogData && Array.isArray(catalogData.categories) && Array.isArray(catalogData.products)
+  const [localCategories, setLocalCategories] = useState([])
+  const [localProducts, setLocalProducts]     = useState([])
+  const [localLoading, setLocalLoading]       = useState(!hasExternalData)
 
   useEffect(() => {
+    if (hasExternalData) return
     async function fetchData() {
       const [catRes, prodRes] = await Promise.all([
         supabase.from('categories').select('*'),
         supabase.from('products').select('*').order('id', { ascending: false }),
       ])
-      setCategories(catRes.data || [])
-      setProducts(prodRes.data || [])
-      setLoading(false)
+      setLocalCategories(catRes.data || [])
+      setLocalProducts(prodRes.data || [])
+      setLocalLoading(false)
     }
     fetchData()
-  }, [])
+  }, [hasExternalData])
+
+  const categories = hasExternalData ? catalogData.categories : localCategories
+  const products   = hasExternalData ? catalogData.products   : localProducts
+  const loading    = hasExternalData ? (catalogLoading ?? false) : localLoading
 
   const [activeCatId, setActiveCatId]   = useState('buket')
   const [activeFilter, setActiveFilter] = useState('Barchasi')
@@ -570,7 +622,7 @@ export default function Catalog({ likedIds, onToggleLike, onAddToCart }) {
     return p.type === activeFilter || p.badge === activeFilter
   })
 
-  if (loading) return <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>Yuklanmoqda...</div>
+  if (loading) return <Loader />
 
   return (
     <div className="catalog-page">
@@ -596,6 +648,18 @@ export default function Catalog({ likedIds, onToggleLike, onAddToCart }) {
             <span className="big-cat-label">{cat.label}</span>
           </button>
         ))}
+        {/* Buket terish tugmasi — "Ism yozish" dan keyin */}
+        <button
+          className="big-cat-btn bouquet-builder-btn"
+          onClick={() => navigate('/bouquet')}
+        >
+          <span className="big-cat-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+            </svg>
+          </span>
+          <span className="big-cat-label">Buket terish</span>
+        </button>
       </div>
 
       {activeCatId !== 'harf' && (

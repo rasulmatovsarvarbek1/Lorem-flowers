@@ -1,13 +1,24 @@
 import { useState, useCallback, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
+
+// ─── SCROLL TO TOP ───────────────────────────────────────────────
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [pathname])
+  return null
+}
 import { useSupabaseData } from './hooks/useSupabaseData'
 import Footer from './components/Footer'
+import Loader from './components/Loader'
 import Catalog from './pages/Catalog'
 import Contact from './pages/Contact'
 import Liked from './pages/Liked'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import Admin from './pages/Admin'
+import BouquetBuilder from './pages/BouquetBuilder'
 import { useLiked } from './hooks/useLiked'
 import { useCart } from './hooks/useCart'
 import './App.css'
@@ -346,7 +357,7 @@ function HomeProductModal({ product, onClose, onAdd }) {
 }
 
 // ─── PRODUCTS (catalog.json dan) ─────────────────────────────────
-function Products({ onAddToCart, catalogData }) {
+function Products({ onAddToCart, catalogData, likedIds, onToggleLike }) {
   const { products: catalogProducts } = catalogData
   const [startIdx, setStartIdx] = useState(0)
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -371,9 +382,10 @@ function Products({ onAddToCart, catalogData }) {
         <div className="products-grid">
           {featured.slice(startIdx, startIdx + visible).map(product => {
             const colors = CAT_COLORS[product.imgClass] || { bg:'#FFF1F2', stroke:'#F43F5E' }
+            const isLiked = likedIds.includes(product.id)
             return (
               <div key={product.id} className="product-card" onClick={() => setSelectedProduct(product)} style={{ cursor:'pointer' }}>
-                <div className="product-img-wrap" style={{ background: colors.bg, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <div className="product-img-wrap" style={{ position:'relative', background: colors.bg, display:'flex', alignItems:'center', justifyContent:'center' }}>
                   {product.imageUrl ? (
                     <img src={product.imageUrl} alt={product.name} className="product-img" />
                   ) : (
@@ -382,6 +394,26 @@ function Products({ onAddToCart, catalogData }) {
                     </span>
                   )}
                   {product.badge && <span className="product-badge">{product.badge}</span>}
+                  {/* Like button */}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onToggleLike(product.id) }}
+                    aria-label="Yoqtirish"
+                    style={{
+                      position:'absolute', top:8, right:8,
+                      width:32, height:32, borderRadius:'50%',
+                      background: isLiked ? 'var(--pink)' : 'rgba(255,255,255,0.85)',
+                      border: isLiked ? 'none' : '1.5px solid #e8c4c8',
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                      cursor:'pointer', transition:'all 0.2s', backdropFilter:'blur(4px)'
+                    }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24"
+                      fill={isLiked ? '#fff' : 'none'}
+                      stroke={isLiked ? '#fff' : '#c4848a'}
+                      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                  </button>
                 </div>
                 <div className="product-body">
                   <p style={{ fontSize:'0.68rem', fontWeight:700, letterSpacing:'0.07em', textTransform:'uppercase', color: colors.stroke, marginBottom:3 }}>{product.type}</p>
@@ -391,7 +423,7 @@ function Products({ onAddToCart, catalogData }) {
                     <span className="product-price">{formatPrice(product.price)}</span>
                     <button
                       className="btn-cart"
-                      onClick={(e) => { e.stopPropagation(); setSelectedProduct(product) }}
+                      onClick={(e) => { e.stopPropagation(); onAddToCart(product, 1) }}
                     >
                       <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path d="M3 6h18l-2 9H5L3 6z"/><path d="M8 6V5a4 4 0 0 1 8 0v1"/>
@@ -448,13 +480,13 @@ function HowItWorks({ data }) {
   )
 }
 
-function HomePage({ onAddToCart, homeData, homeCatalogData, homeLoading }) {
-  if (homeLoading) return <div style={{textAlign:'center', padding:'4rem'}}>Yuklanmoqda...</div>
+function HomePage({ onAddToCart, homeData, homeCatalogData, homeLoading, likedIds, onToggleLike }) {
+  if (homeLoading) return <Loader />
   return (
     <main>
       <Hero data={homeData} />
       <Collections data={homeData} />
-      <Products onAddToCart={onAddToCart} catalogData={homeCatalogData} />
+      <Products onAddToCart={onAddToCart} catalogData={homeCatalogData} likedIds={likedIds} onToggleLike={onToggleLike} />
       <HowItWorks data={homeData} />
     </main>
   )
@@ -468,15 +500,17 @@ function AppLayout() {
 
   return (
     <div className="app">
+      <ScrollToTop />
       <Navbar likedCount={likedIds.length} cartCount={cartCount} />
       <Routes>
-        <Route path="/"        element={<HomePage onAddToCart={addToCart} homeData={homeData} homeCatalogData={homeCatalogData} homeLoading={homeLoading} />} />
-        <Route path="/catalog" element={<Catalog likedIds={likedIds} onToggleLike={toggleLike} onAddToCart={addToCart} />} />
+        <Route path="/"        element={<HomePage onAddToCart={addToCart} homeData={homeData} homeCatalogData={homeCatalogData} homeLoading={homeLoading} likedIds={likedIds} onToggleLike={toggleLike} />} />
+        <Route path="/catalog" element={<Catalog likedIds={likedIds} onToggleLike={toggleLike} onAddToCart={addToCart} catalogData={homeCatalogData} catalogLoading={homeLoading} />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/liked"   element={<Liked likedIds={likedIds} onUnlike={toggleLike} onAddToCart={addToCart} />} />
         <Route path="/cart"     element={<Cart cartItems={cartItems} onRemove={removeFromCart} onUpdateQty={updateQty} onClearCart={clearCart} />} />
         <Route path="/checkout" element={<Checkout cartItems={cartItems} onClearCart={clearCart} />} />
         <Route path="/admin"    element={<Admin />} />
+        <Route path="/bouquet"  element={<BouquetBuilder onAddToCart={addToCart} />} />
       </Routes>
       <Footer />
     </div>

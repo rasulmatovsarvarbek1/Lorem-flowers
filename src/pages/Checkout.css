@@ -78,6 +78,12 @@
   .checkout-header-title {
     font-size: 1.5rem !important;
   }
+
+  /* Section kartalar padding */
+  .checkout-section-card {
+    padding: 1.1rem !important;
+    border-radius: 14px !important;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -90,6 +96,16 @@
 
   .checkout-header-title {
     font-size: 1.3rem !important;
+  }
+
+  .checkout-name-row {
+    grid-template-columns: 1fr !important;
+    gap: 0.6rem !important;
+  }
+
+  .checkout-radio-row {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
   }
 }
 

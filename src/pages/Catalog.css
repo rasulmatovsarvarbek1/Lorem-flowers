@@ -2410,3 +2410,484 @@
   border-radius: 20px;
   backdrop-filter: blur(4px);
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE — CATALOG.CSS
+   900px → 600px → 400px → 320px
+═══════════════════════════════════════════════════════════════════ */
+
+/* ─── TABLET (max 900px) ─── */
+@media (max-width: 900px) {
+  .catalog-hero {
+    height: 210px;
+  }
+
+  .catalog-hero-content {
+    padding: 0 2rem 2rem;
+  }
+
+  .catalog-hero-title {
+    font-size: 2.2rem;
+  }
+
+  .catalog-hero-deco {
+    font-size: 5rem;
+    right: 2rem;
+  }
+
+  .catalog-big-cats {
+    padding: 1.25rem 2rem 0.5rem;
+  }
+
+  .catalog-filter-row {
+    padding: 0.9rem 2rem;
+  }
+
+  .catalog-section-top {
+    padding: 1.25rem 2rem 1rem;
+  }
+
+  .catalog-products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 0 2rem 3.5rem;
+  }
+
+  .harf-inline-btns {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .harf-inline-pkgs-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ─── MOBILE (max 600px) ─── */
+@media (max-width: 600px) {
+  .catalog-hero {
+    height: 190px;
+  }
+
+  .catalog-hero-content {
+    padding: 0 1.25rem 1.5rem;
+  }
+
+  .catalog-hero-title {
+    font-size: 1.8rem;
+  }
+
+  .catalog-hero-sub {
+    font-size: 0.8rem;
+    max-width: 100%;
+  }
+
+  .catalog-hero-deco {
+    font-size: 4rem;
+    right: 1rem;
+    opacity: 0.12;
+  }
+
+  .catalog-big-cats {
+    padding: 1rem 1rem 0.4rem;
+    gap: 0.5rem;
+  }
+
+  .big-cat-btn {
+    padding: 10px 12px;
+    min-width: 74px;
+    border-radius: 12px;
+  }
+
+  .big-cat-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .big-cat-label {
+    font-size: 0.68rem;
+  }
+
+  .catalog-filter-row {
+    padding: 0.75rem 1rem;
+    gap: 0.4rem;
+  }
+
+  .filter-tag {
+    padding: 4px 12px;
+    font-size: 0.72rem;
+  }
+
+  .catalog-section-top {
+    padding: 1rem 1rem 0.75rem;
+  }
+
+  .catalog-section-top h2 {
+    font-size: 1.15rem;
+  }
+
+  .catalog-count {
+    font-size: 0.72rem;
+    padding: 3px 10px;
+  }
+
+  .catalog-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.65rem;
+    padding: 0 1rem 3rem;
+  }
+
+  .cat-product-img {
+    height: 140px;
+  }
+
+  .cat-product-body {
+    padding: 0.75rem;
+  }
+
+  .cat-product-name {
+    font-size: 0.88rem;
+  }
+
+  .cat-product-desc {
+    font-size: 0.7rem;
+    margin-bottom: 8px;
+  }
+
+  .cat-product-price {
+    font-size: 0.82rem;
+  }
+
+  .cat-add-btn {
+    font-size: 0.68rem;
+    padding: 5px 10px;
+  }
+
+  /* Modal */
+  .modal-box {
+    padding: 1.35rem;
+    width: calc(100vw - 2rem);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-img-wrap {
+    height: 170px;
+    margin: 0.7rem 0;
+  }
+
+  .modal-total-price {
+    font-size: 1.2rem;
+  }
+
+  /* Harf inline */
+  .harf-inline-wrap {
+    padding: 0.5rem 0 1.5rem;
+  }
+
+  .harf-inline-btns {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .harf-inline-btn {
+    padding: 1rem 1rem;
+  }
+
+  .harf-inline-btn-title {
+    font-size: 0.92rem;
+  }
+
+  .harf-inline-btn-sub {
+    font-size: 0.7rem;
+  }
+
+  .harf-inline-pkgs-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .harf-inline-pkg-card {
+    padding: 0.85rem 0.5rem;
+  }
+
+  .harf-inline-pkg-name {
+    font-size: 0.88rem;
+  }
+
+  .harf-inline-pkg-img-wrap {
+    height: 110px;
+  }
+
+  /* Harf hero */
+  .harf-hero {
+    height: 180px;
+  }
+}
+
+/* ─── KICHIK MOBILE (max 400px) ─── */
+@media (max-width: 400px) {
+  .catalog-hero {
+    height: 170px;
+  }
+
+  .catalog-hero-title {
+    font-size: 1.5rem;
+  }
+
+  .catalog-hero-deco {
+    display: none;
+  }
+
+  .catalog-big-cats {
+    padding: 0.85rem 0.75rem 0.4rem;
+    gap: 0.4rem;
+  }
+
+  .big-cat-btn {
+    padding: 8px 10px;
+    min-width: 66px;
+  }
+
+  .big-cat-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .catalog-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    padding: 0 0.75rem 2.5rem;
+  }
+
+  .cat-product-img {
+    height: 120px;
+    font-size: 3rem;
+  }
+
+  .cat-product-body {
+    padding: 0.6rem;
+  }
+
+  .cat-product-name {
+    font-size: 0.82rem;
+  }
+
+  .cat-product-desc {
+    display: none;
+  }
+
+  .cat-add-btn {
+    font-size: 0.64rem;
+    padding: 4px 8px;
+  }
+
+  .harf-inline-btns {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .harf-inline-btn {
+    padding: 0.85rem 0.75rem;
+  }
+
+  .harf-inline-btn-icon {
+    font-size: 1.2rem;
+  }
+
+  .harf-inline-btn-title {
+    font-size: 0.85rem;
+  }
+
+  .harf-inline-pkgs-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .harf-inline-pkg-img-wrap {
+    height: 90px;
+  }
+
+  .harf-inline-pkg-name {
+    font-size: 0.82rem;
+  }
+
+  .harf-inline-pkg-flowers {
+    font-size: 0.72rem;
+  }
+
+  .harf-inline-pkg-price {
+    font-size: 0.85rem;
+  }
+}
+
+/* ─── JUDA KICHIK MOBILE (max 320px) ─── */
+@media (max-width: 320px) {
+  .catalog-hero {
+    height: 155px;
+  }
+
+  .catalog-hero-title {
+    font-size: 1.3rem;
+  }
+
+  .catalog-hero-sub {
+    font-size: 0.72rem;
+  }
+
+  .catalog-hero-content {
+    padding: 0 1rem 1.25rem;
+  }
+
+  .big-cat-btn {
+    padding: 7px 8px;
+    min-width: 58px;
+    border-radius: 10px;
+  }
+
+  .big-cat-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .big-cat-label {
+    font-size: 0.62rem;
+  }
+
+  .catalog-big-cats {
+    padding: 0.75rem 0.5rem 0.35rem;
+    gap: 0.3rem;
+  }
+
+  .catalog-filter-row {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .filter-tag {
+    padding: 3px 10px;
+    font-size: 0.68rem;
+  }
+
+  .catalog-section-top {
+    padding: 0.85rem 0.75rem 0.6rem;
+  }
+
+  .catalog-section-top h2 {
+    font-size: 1rem;
+  }
+
+  .catalog-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+    padding: 0 0.5rem 2rem;
+  }
+
+  .cat-product-img {
+    height: 105px;
+    font-size: 2.5rem;
+  }
+
+  .cat-product-body {
+    padding: 0.5rem;
+  }
+
+  .cat-product-name {
+    font-size: 0.76rem;
+    margin-bottom: 3px;
+  }
+
+  .cat-product-price {
+    font-size: 0.72rem;
+  }
+
+  .cat-add-btn {
+    font-size: 0.6rem;
+    padding: 3px 6px;
+  }
+
+  .modal-box {
+    padding: 1.1rem;
+    border-radius: 14px;
+  }
+
+  .modal-img-wrap {
+    height: 140px;
+  }
+
+  .modal-name {
+    font-size: 1rem;
+  }
+
+  .qty-control-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 1.1rem;
+  }
+
+  .qty-control-num {
+    font-size: 1.3rem;
+  }
+
+  .harf-inline-btns {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .harf-inline-btn {
+    padding: 0.75rem 0.65rem;
+    border-radius: 14px;
+  }
+
+  .harf-inline-btn-icon {
+    font-size: 1.1rem;
+  }
+
+  .harf-inline-btn-title {
+    font-size: 0.78rem;
+  }
+
+  .harf-inline-pkgs-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .harf-inline-pkg-card {
+    padding: 0.7rem 0.4rem;
+    border-radius: 12px;
+  }
+
+  .harf-inline-pkg-img-wrap {
+    height: 80px;
+    border-radius: 8px;
+  }
+
+  .harf-inline-pkg-name {
+    font-size: 0.75rem;
+  }
+
+  .harf-inline-pkg-flowers {
+    font-size: 0.66rem;
+  }
+
+  .harf-inline-pkg-price {
+    font-size: 0.8rem;
+  }
+
+  .harf-inline-ism-input {
+    font-size: 0.88rem;
+    padding: 10px 12px;
+  }
+
+  .harf-inline-total {
+    padding: 0.9rem 1rem;
+    border-radius: 14px;
+  }
+
+  .harf-inline-total-price {
+    font-size: 1rem;
+  }
+
+  .harf-inline-cart-btn {
+    font-size: 0.85rem;
+    padding: 11px;
+    border-radius: 12px;
+  }
+}

@@ -59,7 +59,7 @@ function LikedCard({ product, onUnlike, onAddToCart, onOpenModal }) {
           </div>
           <button
             className="liked-cart-btn"
-            onClick={(e) => { e.stopPropagation(); onAddToCart(product, 1) }}
+            onClick={(e) => { e.stopPropagation(); onAddToCart(product, 1); onUnlike(product.id) }}
           >
             🛒 Savat
           </button>
@@ -76,7 +76,7 @@ export default function Liked({ likedIds, onUnlike, onAddToCart }) {
   const closeModal = useCallback(() => setSelectedProduct(null), [])
 
   // Mini modal (Catalog.jsx dagi ProductModal o'rniga)
-  function LikedModal({ product, onClose }) {
+  function LikedModal({ product, onClose, onUnlike }) {
     const [qty, setQty] = useState(1)
     const [added, setAdded] = useState(false)
     const isDona = product.category === 'donalik'
@@ -90,6 +90,7 @@ export default function Liked({ likedIds, onUnlike, onAddToCart }) {
 
     const handleAdd = () => {
       onAddToCart(product, qty)
+      onUnlike(product.id)
       setAdded(true)
       setTimeout(() => { setAdded(false); onClose() }, 1200)
     }
@@ -191,7 +192,7 @@ export default function Liked({ likedIds, onUnlike, onAddToCart }) {
       </div>
 
       {selectedProduct && (
-        <LikedModal product={selectedProduct} onClose={closeModal} />
+        <LikedModal product={selectedProduct} onClose={closeModal} onUnlike={onUnlike} />
       )}
 
     </div>
