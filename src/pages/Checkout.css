@@ -22,10 +22,9 @@
   25%       { transform: translateX(-4px); }
   75%       { transform: translateX(4px); }
 }
-
 .shake { animation: shake 0.3s ease; }
 
-/* Layout */
+/* ─── LAYOUT ─── */
 .checkout-layout {
   display: grid;
   grid-template-columns: 1fr 320px;
@@ -33,15 +32,123 @@
   align-items: start;
 }
 
-/* Right column sticky */
 .checkout-right {
   position: sticky;
   top: 5rem;
 }
 
-/* ═══════════════════════════════════════════════════════
-   CHECKOUT RESPONSIVE — 900px
-═══════════════════════════════════════════════════════ */
+/* ─── SECTION CARD (override inline) ─── */
+.checkout-section-card {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.05);
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* ─── SUMMARY CARD ─── */
+.checkout-summary-card {
+  background: var(--white);
+  border-radius: 18px;
+  padding: 1.4rem;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Summary ichidagi narx qatori — sinmasin */
+.checkout-summary-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.1rem;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.checkout-summary-total-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+.checkout-summary-total-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--pink);
+  text-align: right;
+  word-break: break-all;
+}
+
+/* Item row ichida narx chiqib ketmasin */
+.checkout-item-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.checkout-item-info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.checkout-item-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.checkout-item-price {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+  flex-shrink: 0;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* ─── RADIO CARD ─── */
+.checkout-radio-card {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.checkout-radio-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.checkout-radio-text p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — 900px
+═══════════════════════════════════════════════ */
 @media (max-width: 900px) {
   .checkout-page-main {
     padding: 2rem 1.5rem 4rem;
@@ -56,68 +163,89 @@
   }
 }
 
-/* ═══════════════════════════════════════════════════════
-   CHECKOUT RESPONSIVE — 600px
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — 600px
+═══════════════════════════════════════════════ */
 @media (max-width: 600px) {
   .checkout-page-main {
     padding: 1.5rem 1rem 3rem;
   }
 
-  /* Ism/Familya — 1 kolonnaga */
   .checkout-name-row {
     grid-template-columns: 1fr !important;
   }
 
-  /* Delivery/payment radio kartalar vertikal */
   .checkout-radio-row {
     flex-direction: column !important;
   }
 
-  /* Header title kichikroq */
   .checkout-header-title {
-    font-size: 1.5rem !important;
+    font-size: 1.6rem !important;
   }
 
-  /* Section kartalar padding */
-  .checkout-section-card {
-    padding: 1.1rem !important;
-    border-radius: 14px !important;
+  .checkout-section-card,
+  .checkout-summary-card {
+    padding: 1.1rem;
+    border-radius: 14px;
+  }
+
+  .checkout-summary-total-price {
+    font-size: 1.1rem;
   }
 }
 
-/* ═══════════════════════════════════════════════════════
-   CHECKOUT RESPONSIVE — 400px
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — 400px
+═══════════════════════════════════════════════ */
 @media (max-width: 400px) {
   .checkout-page-main {
-    padding: 1.25rem 0.75rem 2.5rem;
+    padding: 1.1rem 0.875rem 2.5rem;
   }
 
   .checkout-header-title {
-    font-size: 1.3rem !important;
+    font-size: 1.35rem !important;
   }
 
-  .checkout-name-row {
-    grid-template-columns: 1fr !important;
-    gap: 0.6rem !important;
+  .checkout-section-card,
+  .checkout-summary-card {
+    padding: 1rem;
+    border-radius: 12px;
   }
 
-  .checkout-radio-row {
-    flex-direction: column !important;
-    gap: 0.5rem !important;
+  .checkout-summary-total-price {
+    font-size: 1rem;
+  }
+
+  .checkout-radio-card {
+    padding: 10px 12px;
+    gap: 6px;
   }
 }
 
-/* ═══════════════════════════════════════════════════════
-   CHECKOUT RESPONSIVE — 320px
-═══════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   RESPONSIVE — 320px
+═══════════════════════════════════════════════ */
 @media (max-width: 320px) {
   .checkout-page-main {
-    padding: 1rem 0.65rem 2rem;
+    padding: 0.875rem 0.75rem 2rem;
   }
 
   .checkout-header-title {
     font-size: 1.15rem !important;
+  }
+
+  .checkout-section-card,
+  .checkout-summary-card {
+    padding: 0.875rem;
+    border-radius: 11px;
+  }
+
+  .checkout-summary-total-price {
+    font-size: 0.95rem;
+  }
+
+  .checkout-radio-card {
+    padding: 9px 10px;
+    gap: 5px;
   }
 }

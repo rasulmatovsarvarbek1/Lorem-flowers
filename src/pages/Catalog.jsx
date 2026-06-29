@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { Gem, PenLine, PartyPopper, Flower2, Rabbit, Scissors, Flower } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
 import Loader from '../components/Loader'
@@ -58,49 +59,84 @@ function getNameMult(len, mults) {
 
 // ─── CATEGORY SVG ICONS ─────────────────────────────────────────
 const CAT_ICONS = {
+
+  // 🌸 Buket — gul dastasi
   buket: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22V13"/>
-      <path d="M12 13C10 11 8 9 8 6.5a4 4 0 0 1 8 0C16 9 14 11 12 13z"/>
-      <path d="M12 13C9 12 6 10 5.5 7"/>
-      <path d="M12 13C15 12 18 10 18.5 7"/>
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22v-7"/>
+      <path d="M9 3C9 3 6 5 6 8c0 1.7 1.3 3 3 3"/>
+      <path d="M15 3C15 3 18 5 18 8c0 1.7-1.3 3-3 3"/>
+      <path d="M6 8c0 0-3 1-3 4 0 1.7 1.3 3 3 3"/>
+      <path d="M18 8c0 0 3 1 3 4 0 1.7-1.3 3-3 3"/>
+      <path d="M9 11c0 1.7 1.3 4 3 4s3-2.3 3-4"/>
       <path d="M8 22h8"/>
     </svg>
   ),
+
+  // 🎉 Bayram — serpantin-konfetti
   bayram: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M5.8 11.3 2 22l10.7-3.79"/>
-      <path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/>
-      <path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11c-.11.7-.72 1.22-1.43 1.22H17"/>
-      <path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98C9.52 4.9 9 5.52 9 6.23V7"/>
+      <path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M2 8h.01"/>
+      <path d="M20.07 5.93a10 10 0 0 1 .5 8.5"/>
+      <path d="M11.13 21.73A10 10 0 0 1 5.5 20"/>
       <path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2z"/>
     </svg>
   ),
+
+  // 🌹 Donalik — bitta atirgul
   donalik: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="7" r="3"/>
-      <path d="M12 4C12 4 9.5 1.5 7 3S5.5 7.5 7.5 9"/>
-      <path d="M12 4C12 4 14.5 1.5 17 3S18.5 7.5 16.5 9"/>
-      <path d="M12 10v5"/>
-      <path d="M8 22h8"/>
-      <path d="M10 15v7"/>
-      <path d="M14 15v7"/>
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22V12"/>
+      <path d="M12 7c0 0-4-1-4 3 0 2 2 3 4 2"/>
+      <path d="M12 7c0 0 4-1 4 3 0 2-2 3-4 2"/>
+      <path d="M12 5c0 0-2-2-2-3.5S11 0 12 0s2 .5 2 1.5S12 5 12 5z"/>
+      <path d="M9 12c0 0-3 0-3 2 0 1.5 1.5 2 3 2"/>
+      <path d="M15 12c0 0 3 0 3 2 0 1.5-1.5 2-3 2"/>
     </svg>
   ),
+
+  // 💍 Kelin — to'y uzugi
   kelin: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2C9 2 7 4 7 6s2 3 5 3 5-1 5-3-2-4-5-4z"/>
-      <path d="M6 8c-2 1-3 3-3 5h18c0-2-1-4-3-5"/>
-      <path d="M9 13v2c0 2 1.5 4 3 4s3-2 3-4v-2"/>
-      <path d="M8 22h8"/>
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="15" r="7"/>
+      <path d="M8.5 7.5 10 5h4l1.5 2.5"/>
+      <path d="M8.5 7.5Q12 10 15.5 7.5"/>
+      <circle cx="12" cy="15" r="2.5"/>
+      <path d="M12 4V3"/>
+      <path d="M10.5 3.5 12 2l1.5 1.5"/>
     </svg>
   ),
+
+  // ✍️ Harf — ruchka (pen)
   harf: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 20h9"/>
-      <path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/>
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+      <path d="m15 5 4 4"/>
     </svg>
   ),
+
+  // 🧸 Yumshoq o'yinchoq — ayiqcha
+  yumshoq: (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* Quloqlar */}
+      <circle cx="7.5" cy="6.5" r="2.5"/>
+      <circle cx="16.5" cy="6.5" r="2.5"/>
+      {/* Bosh */}
+      <circle cx="12" cy="11" r="5"/>
+      {/* Tana */}
+      <ellipse cx="12" cy="19" rx="4" ry="3"/>
+      {/* Qo'llar */}
+      <path d="M7 16.5C5.5 15.5 4 16 4 17.5s1 2.5 3 2"/>
+      <path d="M17 16.5C18.5 15.5 20 16 20 17.5s-1 2.5-3 2"/>
+      {/* Ko'zlar */}
+      <circle cx="10" cy="10.5" r="0.7" fill="currentColor" stroke="none"/>
+      <circle cx="14" cy="10.5" r="0.7" fill="currentColor" stroke="none"/>
+      {/* Burun */}
+      <path d="M11 12.5 Q12 13.5 13 12.5"/>
+    </svg>
+  ),
+
 }
 
 function CatIcon({ catId }) {
@@ -729,3 +765,4 @@ export default function Catalog({ likedIds, onToggleLike, onAddToCart, catalogDa
     </div>
   )
 }
+

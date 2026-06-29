@@ -21,31 +21,40 @@ function FlowerImg({ src, alt, emoji }) {
 }
 
 const CART_RESPONSIVE_CSS = `
-  .cart-page-main { padding: 3rem 3rem 5rem; max-width: 860px; margin: 0 auto; }
+  /* ── Base ── */
+  .cart-page-main { padding: 3rem 3rem 5rem; max-width: 860px; margin: 0 auto; box-sizing: border-box; }
   .cart-layout { display: grid; grid-template-columns: 1fr 320px; gap: 2rem; align-items: start; }
-  .cart-item-card { display: flex; align-items: center; gap: 1rem; }
-  .cart-item-img { width: 72px; height: 72px; }
+  .cart-item-card { display: flex; align-items: center; gap: 1rem; box-sizing: border-box; }
+  .cart-item-img { width: 72px; height: 72px; flex-shrink: 0; }
+  .cart-item-info { flex: 1; min-width: 0; overflow: hidden; }
   .cart-item-controls { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
   .cart-item-qty { display: flex; align-items: center; gap: 0.5rem; }
-  .cart-summary { position: sticky; top: 5rem; }
+  .cart-summary { position: sticky; top: 5rem; box-sizing: border-box; }
+  .cart-header-title { font-size: 2rem; }
 
+  /* ── 1200px ── */
   @media (max-width: 1200px) {
     .cart-page-main { padding: 2.5rem 2rem 4rem; max-width: 100%; }
   }
 
+  /* ── 860px ── */
   @media (max-width: 860px) {
     .cart-layout { grid-template-columns: 1fr; }
     .cart-summary { position: static; top: auto; }
   }
 
+  /* ── 640px ── */
   @media (max-width: 640px) {
     .cart-page-main { padding: 1.75rem 1.25rem 3.5rem; }
+    .cart-header-title { font-size: 1.65rem !important; }
     .cart-item-card { padding: 0.85rem !important; gap: 0.75rem !important; }
     .cart-item-img { width: 62px !important; height: 62px !important; }
   }
 
+  /* ── 480px ── */
   @media (max-width: 480px) {
     .cart-page-main { padding: 1.5rem 1rem 3rem; }
+    .cart-header-title { font-size: 1.45rem !important; }
     .cart-item-card { flex-wrap: wrap; gap: 0.6rem !important; }
     .cart-item-img { width: 56px !important; height: 56px !important; }
     .cart-item-info { min-width: calc(100% - 56px - 0.6rem - 32px) !important; }
@@ -53,19 +62,26 @@ const CART_RESPONSIVE_CSS = `
     .cart-item-qty button { width: 26px !important; height: 26px !important; font-size: 1rem !important; }
   }
 
+  /* ── 380px ── */
   @media (max-width: 380px) {
-    .cart-page-main { padding: 1.25rem 0.75rem 2.5rem; }
-    .cart-item-card { padding: 0.7rem !important; }
+    .cart-page-main { padding: 1.25rem 0.875rem 2.5rem; }
+    .cart-header-title { font-size: 1.25rem !important; }
+    .cart-item-card { padding: 0.75rem !important; }
     .cart-item-img { width: 50px !important; height: 50px !important; }
-    .cart-item-info p:nth-child(2) { font-size: 0.85rem !important; }
     .cart-item-controls { margin-left: calc(50px + 0.6rem); }
-    .cart-summary { padding: 1.25rem !important; }
+    .cart-summary { padding: 1.1rem !important; border-radius: 16px !important; }
   }
 
-  @media (max-width: 330px) {
-    .cart-item-card { flex-direction: column; align-items: stretch; }
-    .cart-item-card > div:first-child { width: 100% !important; height: 110px !important; }
-    .cart-item-controls { margin-left: 0; justify-content: space-between; width: 100%; }
+  /* ── 320px ── */
+  @media (max-width: 320px) {
+    .cart-page-main { padding: 1rem 0.75rem 2rem; }
+    .cart-header-title { font-size: 1.1rem !important; }
+    .cart-item-card { padding: 0.65rem !important; gap: 0.5rem !important; }
+    .cart-item-img { width: 44px !important; height: 44px !important; }
+    .cart-item-info { min-width: calc(100% - 44px - 0.5rem - 28px) !important; }
+    .cart-item-controls { margin-left: calc(44px + 0.5rem); gap: 0.4rem !important; }
+    .cart-item-qty button { width: 24px !important; height: 24px !important; font-size: 0.9rem !important; }
+    .cart-summary { padding: 0.9rem !important; border-radius: 14px !important; }
   }
 `
 
@@ -86,7 +102,7 @@ export default function Cart({ cartItems, onRemove, onUpdateQty, onClearCart }) 
         <p style={{ fontSize: '0.7rem', letterSpacing: '0.16em', color: 'var(--pink)', fontWeight: 600, marginBottom: '0.4rem' }}>
           XARID SAVATI
         </p>
-        <h1 style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '2rem', fontWeight: 600, color: 'var(--text)' }}>
+        <h1 className="cart-header-title" style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 600, color: 'var(--text)' }}>
           Savatim
         </h1>
       </div>

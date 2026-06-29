@@ -395,14 +395,13 @@ export default function Checkout({ cartItems, onClearCart }) {
     )
   }
 
-  const sectionCard = { background: 'var(--white)', borderRadius: 18, padding: '1.5rem', boxShadow: '0 2px 14px rgba(0,0,0,0.05)', marginBottom: '1rem' }
+  // sectionCard → CSS classga o'tkazildi: checkout-section-card
+  const sectionCard = null // ishlatilmaydi endi
   const sectionTitle = { fontFamily: 'Montserrat, sans-serif', fontSize: '0.92rem', fontWeight: 700, color: 'var(--text)', marginBottom: '1.1rem', display: 'flex', alignItems: 'center', gap: 8 }
 
   const radioCard = (active, hasError) => ({
-    flex: 1, padding: '12px 14px', borderRadius: 12, cursor: 'pointer', transition: 'all 0.15s',
     border: `1.5px solid ${hasError ? '#e05c6a' : active ? 'var(--pink)' : 'var(--cream-dark)'}`,
     background: active ? 'var(--pink-pale)' : 'var(--white)',
-    display: 'flex', alignItems: 'center', gap: 8
   })
 
   return (
@@ -430,7 +429,7 @@ export default function Checkout({ cartItems, onClearCart }) {
         <div>
 
           {/* 1. Shaxsiy ma'lumotlar */}
-          <div style={sectionCard}>
+          <div className="checkout-section-card">
             <p style={sectionTitle}>
               <span style={{ width: 26, height: 26, borderRadius: '50%', background: 'var(--pink-pale)', color: 'var(--pink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700 }}>1</span>
               Shaxsiy ma'lumotlar
@@ -476,7 +475,7 @@ export default function Checkout({ cartItems, onClearCart }) {
           </div>
 
           {/* 2. Yetkazib berish */}
-          <div style={sectionCard}>
+          <div className="checkout-section-card">
             <p style={sectionTitle}>
               <span style={{ width: 26, height: 26, borderRadius: '50%', background: 'var(--pink-pale)', color: 'var(--pink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700 }}>2</span>
               Yetkazib berish
@@ -489,12 +488,13 @@ export default function Checkout({ cartItems, onClearCart }) {
               ].map(opt => (
                 <div
                   key={opt.val}
+                  className="checkout-radio-card"
                   style={radioCard(form.delivery === opt.val, false)}
                   onClick={() => set('delivery', opt.val)}
                 >
-                  <span style={{ fontSize: '1.2rem' }}>{opt.icon}</span>
-                  <div>
-                    <p style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)', margin: 0 }}>{opt.label}</p>
+                  <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{opt.icon}</span>
+                  <div className="checkout-radio-text">
+                    <p style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{opt.label}</p>
                     <p style={{ fontSize: '0.68rem', color: 'var(--text-muted)', margin: 0 }}>{opt.sub}</p>
                   </div>
                   <div style={{ marginLeft: 'auto', width: 18, height: 18, borderRadius: '50%', border: `2px solid ${form.delivery === opt.val ? 'var(--pink)' : 'var(--cream-dark)'}`, background: form.delivery === opt.val ? 'var(--pink)' : 'transparent', transition: 'all 0.15s', flexShrink: 0 }} />
@@ -523,7 +523,7 @@ export default function Checkout({ cartItems, onClearCart }) {
           </div>
 
           {/* 3. To'lov usuli */}
-          <div style={sectionCard}>
+          <div className="checkout-section-card">
             <p style={sectionTitle}>
               <span style={{ width: 26, height: 26, borderRadius: '50%', background: 'var(--pink-pale)', color: 'var(--pink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700 }}>3</span>
               To'lov usuli *
@@ -535,12 +535,13 @@ export default function Checkout({ cartItems, onClearCart }) {
               ].map(opt => (
                 <div
                   key={opt.val}
+                  className="checkout-radio-card"
                   style={radioCard(form.payment === opt.val, !!errors.payment)}
                   onClick={() => set('payment', opt.val)}
                 >
-                  <span style={{ fontSize: '1.2rem' }}>{opt.icon}</span>
-                  <div>
-                    <p style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)', margin: 0 }}>{opt.label}</p>
+                  <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>{opt.icon}</span>
+                  <div className="checkout-radio-text">
+                    <p style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{opt.label}</p>
                     <p style={{ fontSize: '0.68rem', color: 'var(--text-muted)', margin: 0 }}>{opt.sub}</p>
                   </div>
                   <div style={{ marginLeft: 'auto', width: 18, height: 18, borderRadius: '50%', border: `2px solid ${form.payment === opt.val ? 'var(--pink)' : errors.payment ? '#e05c6a' : 'var(--cream-dark)'}`, background: form.payment === opt.val ? 'var(--pink)' : 'transparent', transition: 'all 0.15s', flexShrink: 0 }} />
@@ -551,7 +552,7 @@ export default function Checkout({ cartItems, onClearCart }) {
           </div>
 
           {/* 4. Izoh */}
-          <div style={sectionCard}>
+          <div className="checkout-section-card">
             <p style={sectionTitle}>
               <span style={{ width: 26, height: 26, borderRadius: '50%', background: 'var(--pink-pale)', color: 'var(--pink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 700 }}>4</span>
               Qo'shimcha izoh
@@ -568,7 +569,7 @@ export default function Checkout({ cartItems, onClearCart }) {
 
         {/* ── RIGHT COLUMN — Order summary ── */}
         <div className="checkout-right">
-          <div style={{ background: 'var(--white)', borderRadius: 18, padding: '1.4rem', boxShadow: '0 2px 16px rgba(0,0,0,0.07)', marginBottom: '1rem' }}>
+          <div className="checkout-summary-card">
             <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '0.92rem', fontWeight: 700, color: 'var(--text)', marginBottom: '1rem' }}>
               Buyurtma ({cartItems.reduce((s, i) => s + i.qty, 0)} ta)
             </p>
@@ -615,15 +616,15 @@ export default function Checkout({ cartItems, onClearCart }) {
                     </div>
                   ) : (
                     /* ── Oddiy itemlar ── */
-                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                    <div className="checkout-item-row">
                       <div style={{ width: 46, height: 46, borderRadius: 10, overflow: 'hidden', flexShrink: 0, background: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <FlowerImg src={item.imageUrl} alt={item.name} emoji={item.emoji} />
                       </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</p>
+                      <div className="checkout-item-info">
+                        <p className="checkout-item-name">{item.name}</p>
                         <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0 }}>{item.qty} × {formatPrice(item.price)}</p>
                       </div>
-                      <p style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text)', flexShrink: 0, margin: 0 }}>{formatPrice(item.price * item.qty)}</p>
+                      <p className="checkout-item-price">{formatPrice(item.price * item.qty)}</p>
                     </div>
                   )}
                 </div>
@@ -642,9 +643,9 @@ export default function Checkout({ cartItems, onClearCart }) {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.1rem' }}>
-              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text)' }}>Jami</span>
-              <span style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--pink)' }}>{formatPrice(total)}</span>
+            <div className="checkout-summary-total-row">
+              <span className="checkout-summary-total-label">Jami</span>
+              <span className="checkout-summary-total-price">{formatPrice(total)}</span>
             </div>
 
             <button

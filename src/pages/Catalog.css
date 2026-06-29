@@ -2,63 +2,65 @@
 .catalog-hero {
   position: relative;
   height: 260px;
-  background: linear-gradient(135deg, #1a6b3a 0%, #2d9e5f 55%, #4ecb8a 100%);
   display: flex;
   align-items: flex-end;
   overflow: hidden;
+  background-color: #fce4ec;
+  background-image: url('/bg_banner.jpg');
+  background-size: cover;
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+.catalog-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(255, 235, 245, 0.85) 0%,
+    rgba(255, 235, 245, 0.6) 45%,
+    rgba(255, 235, 245, 0.08) 100%
+  );
+  z-index: 1;
 }
 
 .catalog-hero-pattern {
-  position: absolute;
-  inset: 0;
-  opacity: 0.12;
-  background-image:
-    radial-gradient(circle at 15% 50%, #fff 1.5px, transparent 1.5px),
-    radial-gradient(circle at 75% 25%, #fff 1px, transparent 1px),
-    radial-gradient(circle at 55% 80%, #fff 2px, transparent 2px),
-    radial-gradient(circle at 90% 70%, #fff 1px, transparent 1px);
-  background-size: 60px 60px, 80px 80px, 45px 45px, 100px 100px;
+  display: none;
 }
 
 .catalog-hero-deco {
-  position: absolute;
-  right: 3rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 7rem;
-  opacity: 0.18;
-  line-height: 1;
-  pointer-events: none;
+  display: none;
 }
 
 .catalog-hero-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   padding: 0 3rem 2.5rem;
 }
 
 .catalog-hero-eyebrow {
   font-size: 0.7rem;
-  letter-spacing: 0.16em;
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: #c2185b;
+  font-weight: 700;
   margin-bottom: 0.5rem;
 }
 
 .catalog-hero-title {
   font-family: 'Montserrat', sans-serif;
   font-size: 2.8rem;
-  font-weight: 600;
-  color: #fff;
+  font-weight: 700;
+  color: #880e4f;
   line-height: 1.1;
   margin-bottom: 0.5rem;
 }
 
 .catalog-hero-sub {
   font-size: 0.88rem;
-  color: rgba(255, 255, 255, 0.82);
+  color: #ad1457;
   max-width: 420px;
   line-height: 1.5;
+  opacity: 0.85;
 }
 
 /* ─── BIG CATEGORIES ─── */
