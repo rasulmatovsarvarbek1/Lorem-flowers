@@ -58,12 +58,14 @@ function getNameMult(len, mults) {
 
 const CAT_ICONS = {
 
-  // Kelin uchun — chiroyli uzuk (turmush qurish nishoni)
+  // Kelin uchun — brilliant uzuk
   kelin: (
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="15.5" r="5.5"/>
-      <path d="M8 9 12 3l4 6z"/>
-      <path d="M8 9h8l-4 4.5z"/>
+      <circle cx="12" cy="16" r="5"/>
+      <path d="M12 3 15.5 8.2 12 12 8.5 8.2Z"/>
+      <path d="M8.5 8.2h7"/>
+      <path d="M12 3 10.3 8.2"/>
+      <path d="M12 3 13.7 8.2"/>
     </svg>
   ),
 
@@ -86,27 +88,33 @@ const CAT_ICONS = {
     </svg>
   ),
 
-  // Buketlar — o'ralgan guldasta
+  // Buketlar — qog'ozga o'ralgan gul dastasi
   buket: (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M8.5 11 7 21h10l-1.5-10z"/>
-      <path d="M10 21c0-1.8.9-2.8 2-2.8s2 1 2 2.8"/>
-      <circle cx="9" cy="7" r="2"/>
-      <circle cx="15" cy="7" r="2"/>
-      <circle cx="12" cy="5" r="2.2"/>
-      <circle cx="12" cy="8.3" r="1.8"/>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 21 9.4 12h5.2L16 21z"/>
+      <path d="M9.6 15.2h4.8"/>
+      <path d="M9.4 12c-1.8-.3-2.8-1.7-2.8-1.7"/>
+      <path d="M14.6 12c1.8-.3 2.8-1.7 2.8-1.7"/>
+      <circle cx="8.6" cy="8.4" r="1.9"/>
+      <circle cx="15.4" cy="8.4" r="1.9"/>
+      <circle cx="12" cy="5.7" r="2.3"/>
+      <circle cx="8.6" cy="8.4" r="0.55" fill="currentColor" stroke="none"/>
+      <circle cx="15.4" cy="8.4" r="0.55" fill="currentColor" stroke="none"/>
+      <circle cx="12" cy="5.7" r="0.65" fill="currentColor" stroke="none"/>
     </svg>
   ),
 
   // Yumshoq o'yinchoq — ayiqcha
   yumshoq: (
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="7" cy="7" r="2.2"/>
-      <circle cx="17" cy="7" r="2.2"/>
-      <circle cx="12" cy="13" r="7"/>
-      <ellipse cx="12" cy="15.5" rx="3" ry="2.2"/>
-      <circle cx="9.3" cy="11.5" r="0.7" fill="currentColor" stroke="none"/>
-      <circle cx="14.7" cy="11.5" r="0.7" fill="currentColor" stroke="none"/>
+      <circle cx="6.6" cy="6.6" r="2.5"/>
+      <circle cx="17.4" cy="6.6" r="2.5"/>
+      <circle cx="12" cy="13" r="7.2"/>
+      <ellipse cx="12" cy="15.3" rx="3.2" ry="2.4"/>
+      <circle cx="12" cy="15" r="0.6" fill="currentColor" stroke="none"/>
+      <path d="M10.7 17.2c.5.35 1.9.35 2.4 0"/>
+      <circle cx="9" cy="11" r="0.75" fill="currentColor" stroke="none"/>
+      <circle cx="15" cy="11" r="0.75" fill="currentColor" stroke="none"/>
     </svg>
   ),
 
@@ -126,8 +134,36 @@ const CAT_ICONS = {
 
 }
 
-function CatIcon({ catId }) {
-  return CAT_ICONS[catId] || null
+// Kategoriya id yoki nomi bazada turlicha yozilgan bo'lishi mumkin
+// (masalan "yumshoq_oyinchoq", "Yumshoq o'yinchoq" va h.k.) — shuning
+// uchun moslashtirilgan (normalize qilingan) kalitlar bilan qidiramiz.
+const CAT_ICON_ALIASES = {
+  kelin: 'kelin',
+  kelinuchun: 'kelin',
+  harf: 'harf',
+  ism: 'harf',
+  ismyozish: 'harf',
+  bayram: 'bayram',
+  bayramuchun: 'bayram',
+  buket: 'buket',
+  buketlar: 'buket',
+  yumshoq: 'yumshoq',
+  yumshoqoyinchoq: 'yumshoq',
+  oyinchoq: 'yumshoq',
+  toy: 'yumshoq',
+  donalik: 'donalik',
+}
+
+function normalizeKey(s) {
+  return (s || '')
+    .toLowerCase()
+    .replace(/['ʼ’`]/g, '')
+    .replace(/[^a-z0-9]/g, '')
+}
+
+function CatIcon({ catId, label }) {
+  const key = CAT_ICON_ALIASES[normalizeKey(catId)] || CAT_ICON_ALIASES[normalizeKey(label)]
+  return CAT_ICONS[key] || null
 }
 
 // ─── SMALL UI ICONS (emoji o'rniga) ─────────────────────────────
@@ -743,7 +779,7 @@ export default function Catalog({ likedIds, onToggleLike, onAddToCart, catalogDa
             className={`big-cat-btn${activeCatId === cat.id ? ' active' : ''}`}
             onClick={() => handleCatChange(cat.id)}
           >
-            <span className="big-cat-icon"><CatIcon catId={cat.id} /></span>
+            <span className="big-cat-icon"><CatIcon catId={cat.id} label={cat.label} /></span>
             <span className="big-cat-label">{cat.label}</span>
           </button>
         ))}
@@ -753,13 +789,17 @@ export default function Catalog({ likedIds, onToggleLike, onAddToCart, catalogDa
           onClick={() => navigate('/bouquet')}
         >
           <span className="big-cat-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 12 7 21h10l-2-9z"/>
-              <path d="M10 12v-1a2 2 0 0 1 4 0v1"/>
-              <circle cx="8.5" cy="7.5" r="2"/>
-              <circle cx="15.5" cy="7.5" r="2"/>
-              <circle cx="12" cy="5.3" r="2.2"/>
-              <path d="M11 21c.3-1.3 1-1.9 1-1.9s.7.6 1 1.9"/>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 21 9.4 12h5.2L16 21z"/>
+              <path d="M9.6 15.2h4.8"/>
+              <path d="M9.4 12c-1.8-.3-2.8-1.7-2.8-1.7"/>
+              <path d="M14.6 12c1.8-.3 2.8-1.7 2.8-1.7"/>
+              <circle cx="8.6" cy="8.4" r="1.9"/>
+              <circle cx="15.4" cy="8.4" r="1.9"/>
+              <circle cx="12" cy="5.7" r="2.3"/>
+              <circle cx="8.6" cy="8.4" r="0.55" fill="currentColor" stroke="none"/>
+              <circle cx="15.4" cy="8.4" r="0.55" fill="currentColor" stroke="none"/>
+              <circle cx="12" cy="5.7" r="0.65" fill="currentColor" stroke="none"/>
             </svg>
           </span>
           <span className="big-cat-label">Buket terish</span>
