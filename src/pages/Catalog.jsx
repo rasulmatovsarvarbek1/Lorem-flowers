@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Gem, PenLine, PartyPopper, Flower2, Rabbit, Scissors, Flower } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase'
 import Loader from '../components/Loader'
@@ -57,83 +56,71 @@ function getNameMult(len, mults) {
   return { label: describeTier(last), mult: last.mult }
 }
 
-// ─── CATEGORY SVG ICONS ─────────────────────────────────────────
 const CAT_ICONS = {
 
-  // 🌸 Buket — gul dastasi
-  buket: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22v-7"/>
-      <path d="M9 3C9 3 6 5 6 8c0 1.7 1.3 3 3 3"/>
-      <path d="M15 3C15 3 18 5 18 8c0 1.7-1.3 3-3 3"/>
-      <path d="M6 8c0 0-3 1-3 4 0 1.7 1.3 3 3 3"/>
-      <path d="M18 8c0 0 3 1 3 4 0 1.7-1.3 3-3 3"/>
-      <path d="M9 11c0 1.7 1.3 4 3 4s3-2.3 3-4"/>
-      <path d="M8 22h8"/>
-    </svg>
-  ),
-
-  // 🎉 Bayram — serpantin-konfetti
-  bayram: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5.8 11.3 2 22l10.7-3.79"/>
-      <path d="M4 3h.01M22 8h.01M15 2h.01M22 20h.01M2 8h.01"/>
-      <path d="M20.07 5.93a10 10 0 0 1 .5 8.5"/>
-      <path d="M11.13 21.73A10 10 0 0 1 5.5 20"/>
-      <path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2z"/>
-    </svg>
-  ),
-
-  // 🌹 Donalik — bitta atirgul
-  donalik: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22V12"/>
-      <path d="M12 7c0 0-4-1-4 3 0 2 2 3 4 2"/>
-      <path d="M12 7c0 0 4-1 4 3 0 2-2 3-4 2"/>
-      <path d="M12 5c0 0-2-2-2-3.5S11 0 12 0s2 .5 2 1.5S12 5 12 5z"/>
-      <path d="M9 12c0 0-3 0-3 2 0 1.5 1.5 2 3 2"/>
-      <path d="M15 12c0 0 3 0 3 2 0 1.5-1.5 2-3 2"/>
-    </svg>
-  ),
-
-  // 💍 Kelin — to'y uzugi
+  // Kelin uchun — chiroyli uzuk (turmush qurish nishoni)
   kelin: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="15" r="7"/>
-      <path d="M8.5 7.5 10 5h4l1.5 2.5"/>
-      <path d="M8.5 7.5Q12 10 15.5 7.5"/>
-      <circle cx="12" cy="15" r="2.5"/>
-      <path d="M12 4V3"/>
-      <path d="M10.5 3.5 12 2l1.5 1.5"/>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="15.5" r="5.5"/>
+      <path d="M8 9 12 3l4 6z"/>
+      <path d="M8 9h8l-4 4.5z"/>
     </svg>
   ),
 
-  // ✍️ Harf — ruchka (pen)
+  // Ism/Harf yozish — qalam
   harf: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
       <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
       <path d="m15 5 4 4"/>
     </svg>
   ),
 
-  // 🧸 Yumshoq o'yinchoq — ayiqcha
+  // Bayram uchun — sovg'a qutisi
+  bayram: (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="8" width="18" height="13" rx="1.5"/>
+      <path d="M3 12h18"/>
+      <path d="M12 8v13"/>
+      <path d="M12 8c-1.3-4-5-4-5-1.5S9 8 12 8z"/>
+      <path d="M12 8c1.3-4 5-4 5-1.5S15 8 12 8z"/>
+    </svg>
+  ),
+
+  // Buketlar — o'ralgan guldasta
+  buket: (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8.5 11 7 21h10l-1.5-10z"/>
+      <path d="M10 21c0-1.8.9-2.8 2-2.8s2 1 2 2.8"/>
+      <circle cx="9" cy="7" r="2"/>
+      <circle cx="15" cy="7" r="2"/>
+      <circle cx="12" cy="5" r="2.2"/>
+      <circle cx="12" cy="8.3" r="1.8"/>
+    </svg>
+  ),
+
+  // Yumshoq o'yinchoq — ayiqcha
   yumshoq: (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      {/* Quloqlar */}
-      <circle cx="7.5" cy="6.5" r="2.5"/>
-      <circle cx="16.5" cy="6.5" r="2.5"/>
-      {/* Bosh */}
-      <circle cx="12" cy="11" r="5"/>
-      {/* Tana */}
-      <ellipse cx="12" cy="19" rx="4" ry="3"/>
-      {/* Qo'llar */}
-      <path d="M7 16.5C5.5 15.5 4 16 4 17.5s1 2.5 3 2"/>
-      <path d="M17 16.5C18.5 15.5 20 16 20 17.5s-1 2.5-3 2"/>
-      {/* Ko'zlar */}
-      <circle cx="10" cy="10.5" r="0.7" fill="currentColor" stroke="none"/>
-      <circle cx="14" cy="10.5" r="0.7" fill="currentColor" stroke="none"/>
-      {/* Burun */}
-      <path d="M11 12.5 Q12 13.5 13 12.5"/>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="7" cy="7" r="2.2"/>
+      <circle cx="17" cy="7" r="2.2"/>
+      <circle cx="12" cy="13" r="7"/>
+      <ellipse cx="12" cy="15.5" rx="3" ry="2.2"/>
+      <circle cx="9.3" cy="11.5" r="0.7" fill="currentColor" stroke="none"/>
+      <circle cx="14.7" cy="11.5" r="0.7" fill="currentColor" stroke="none"/>
+    </svg>
+  ),
+
+  // Donalik — bitta gul poyasi
+  donalik: (
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22V13"/>
+      <circle cx="12" cy="7" r="1.6" fill="currentColor" stroke="none"/>
+      <circle cx="12" cy="3.5" r="2"/>
+      <circle cx="15.5" cy="5.2" r="2"/>
+      <circle cx="15.5" cy="8.8" r="2"/>
+      <circle cx="12" cy="10.5" r="2"/>
+      <circle cx="8.5" cy="8.8" r="2"/>
+      <circle cx="8.5" cy="5.2" r="2"/>
     </svg>
   ),
 
@@ -141,6 +128,83 @@ const CAT_ICONS = {
 
 function CatIcon({ catId }) {
   return CAT_ICONS[catId] || null
+}
+
+// ─── SMALL UI ICONS (emoji o'rniga) ─────────────────────────────
+function XIcon({ size = 14 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  )
+}
+
+function CheckIcon({ size = 14 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  )
+}
+
+function CartIcon({ size = 15 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="21" r="1" />
+      <circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+    </svg>
+  )
+}
+
+function WarnIcon({ size = 14 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10.3 3.9 1.8 18a1.5 1.5 0 0 0 1.3 2.2h17.8a1.5 1.5 0 0 0 1.3-2.2L13.7 3.9a1.5 1.5 0 0 0-2.6 0z" />
+      <path d="M12 9v4" />
+      <circle cx="12" cy="16.5" r="0.6" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function PenSmallIcon({ size = 13 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+    </svg>
+  )
+}
+
+function FlowerSmallIcon({ size = 13 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="2.2" />
+      <circle cx="12" cy="6" r="2.2" />
+      <circle cx="12" cy="18" r="2.2" />
+      <circle cx="6" cy="12" r="2.2" />
+      <circle cx="18" cy="12" r="2.2" />
+    </svg>
+  )
+}
+
+function LeafIcon({ size = 40 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 20A7 7 0 0 1 4 13c0-6 7-10 15-10 0 8-4 15-10 15a7 7 0 0 1-7-7" />
+      <path d="M4 13c3 0 8-1 10-6" />
+    </svg>
+  )
+}
+
+function RoseSmallIcon({ size = 15 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="4.5" />
+      <path d="M12 12.5V21" />
+      <path d="M12 17c-2 0-3.5-1-3.5-1" />
+    </svg>
+  )
 }
 
 // ─── FLOWER IMAGE with fallback ─────────────────────────────────
@@ -196,7 +260,7 @@ function ProductModal({ product, isDona, onClose, onAdd }) {
       const harfName = harfMode === 'ism' && trimmed
         ? `Ism: "${trimmed}" — ${selHarfPkg.label} paket`
         : `Harf yozish — ${selHarfPkg.label} paket`
-      onAdd({ id: `harf_${selectedHarfPkg}_${Date.now()}`, name: harfName, price: selHarfPkg.price, emoji: '🌹', category: 'harf' }, 1)
+      onAdd({ id: `harf_${selectedHarfPkg}_${Date.now()}`, name: harfName, price: selHarfPkg.price, category: 'harf' }, 1)
     }
     setAdded(true)
     setTimeout(() => { setAdded(false); onClose() }, 1200)
@@ -212,7 +276,7 @@ function ProductModal({ product, isDona, onClose, onAdd }) {
             <p className="modal-type-label">{product.type}</p>
             <p className="modal-name">{product.name}</p>
           </div>
-          <button className="modal-x-btn" onClick={onClose} aria-label="Yopish">✕</button>
+          <button className="modal-x-btn" onClick={onClose} aria-label="Yopish"><XIcon size={16} /></button>
         </div>
 
         <div className="modal-img-wrap">
@@ -250,23 +314,23 @@ function ProductModal({ product, isDona, onClose, onAdd }) {
         {isDona && (
           <div className="modal-harf-section">
             <p className="modal-harf-section-title">
-              ✦ Harf yoki ism yozdirish
+              Harf yoki ism yozdirish
               <span className="modal-harf-optional"> (ixtiyoriy)</span>
             </p>
             <div className="modal-harf-mode-row">
               <button
                 className={`modal-harf-mode-btn${harfMode === 'harf' ? ' active' : ''}`}
                 onClick={() => { setHarfMode(harfMode === 'harf' ? null : 'harf'); setIsmText(''); setSelectedHarfPkg(null) }}
-              >✦ Harf</button>
+              ><PenSmallIcon /> Harf</button>
               <button
                 className={`modal-harf-mode-btn${harfMode === 'ism' ? ' active' : ''}`}
                 onClick={() => { setHarfMode(harfMode === 'ism' ? null : 'ism'); setIsmText(''); setSelectedHarfPkg(null) }}
-              >✿ Ism</button>
+              ><FlowerSmallIcon /> Ism</button>
               {harfMode && (
                 <button
                   className="modal-harf-mode-btn cancel"
                   onClick={() => { setHarfMode(null); setIsmText(''); setSelectedHarfPkg(null) }}
-                >✕ Bekor</button>
+                ><XIcon size={12} /> Bekor</button>
               )}
             </div>
 
@@ -280,8 +344,8 @@ function ProductModal({ product, isDona, onClose, onAdd }) {
                   maxLength={30}
                   autoFocus
                 />
-                {nameLen > 0 && nameLen < 3 && <p className="harf-modal-hint warn">⚠ Kamida 3 harf kiriting</p>}
-                {multInfo && <p className="harf-modal-hint ok">📏 {multInfo.label}</p>}
+                {nameLen > 0 && nameLen < 3 && <p className="harf-modal-hint warn"><WarnIcon /> Kamida 3 harf kiriting</p>}
+                {multInfo && <p className="harf-modal-hint ok">{multInfo.label}</p>}
               </div>
             )}
 
@@ -294,11 +358,11 @@ function ProductModal({ product, isDona, onClose, onAdd }) {
                     className={`modal-harf-pkg-row${selectedHarfPkg === pkg.id ? ' selected' : ''}`}
                     onClick={() => setSelectedHarfPkg(selectedHarfPkg === pkg.id ? null : pkg.id)}
                   >
-                    <span className="modal-harf-pkg-badge">{i === 0 ? 'Standart' : i === 1 ? '⭐' : '👑'}</span>
+                    <span className="modal-harf-pkg-badge">{i === 0 ? 'Standart' : i === 1 ? 'Mashhur' : 'Premium'}</span>
                     <span className="modal-harf-pkg-name">{pkg.label}</span>
-                    <span className="modal-harf-pkg-flowers">🌹{pkg.red} + 🤍{pkg.white}</span>
+                    <span className="modal-harf-pkg-flowers">{pkg.red} qizil + {pkg.white} oq</span>
                     <span className="modal-harf-pkg-price">{formatPrice(pkg.price)}</span>
-                    {selectedHarfPkg === pkg.id && <span className="modal-harf-pkg-check">✓</span>}
+                    {selectedHarfPkg === pkg.id && <span className="modal-harf-pkg-check"><CheckIcon /></span>}
                   </div>
                 ))}
               </div>
@@ -312,7 +376,7 @@ function ProductModal({ product, isDona, onClose, onAdd }) {
         </div>
 
         <button className={`modal-cart-btn${added ? ' success' : ''}`} onClick={handleAdd}>
-          {added ? "✓ Savatga qo'shildi!" : "🛒 Savatga qo'shish"}
+          {added ? <><CheckIcon /> Savatga qo'shildi!</> : <><CartIcon /> Savatga qo'shish</>}
         </button>
       </div>
     </div>
@@ -424,7 +488,6 @@ function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
       id: `harf_${selected}_${Date.now()}`,
       name,
       price: selectedPkg.price,
-      emoji: '🌹',
       category: 'harf',
       harfNote: mode === 'ism'
         ? `Ism yozish: "${trimmed}"`
@@ -456,7 +519,7 @@ function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
           className={`harf-inline-btn${mode === 'harf' ? ' active' : ''}`}
           onClick={() => handleModeChange(mode === 'harf' ? null : 'harf')}
         >
-          <span className="harf-inline-btn-icon">✦</span>
+          <span className="harf-inline-btn-icon"><PenSmallIcon size={18} /></span>
           <span className="harf-inline-btn-title">Harf yozish</span>
           <span className="harf-inline-btn-sub">Bitta harf — 3 paket</span>
           <span className="harf-inline-btn-from">225 000 so'mdan</span>
@@ -465,7 +528,7 @@ function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
           className={`harf-inline-btn${mode === 'ism' ? ' active' : ''}`}
           onClick={() => handleModeChange(mode === 'ism' ? null : 'ism')}
         >
-          <span className="harf-inline-btn-icon">✿</span>
+          <span className="harf-inline-btn-icon"><FlowerSmallIcon size={18} /></span>
           <span className="harf-inline-btn-title">Ism yozish</span>
           <span className="harf-inline-btn-sub">To'liq ism — uzunlikka qarab</span>
           <span className="harf-inline-btn-from">225 000 so'mdan</span>
@@ -486,10 +549,10 @@ function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
             style={{ textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '1.2rem', fontWeight: 700 }}
           />
           {harfText.trim().length === 0 && (
-            <p className="harf-modal-hint warn">⚠ Harf kiriting — paketlar ko'rinadi</p>
+            <p className="harf-modal-hint warn"><WarnIcon /> Harf kiriting — paketlar ko'rinadi</p>
           )}
           {harfText.trim().length > 0 && (
-            <p className="harf-modal-hint ok">✦ "{harfText.trim().toUpperCase()}" harfi tanlandi</p>
+            <p className="harf-modal-hint ok">"{harfText.trim().toUpperCase()}" harfi tanlandi</p>
           )}
         </div>
       )}
@@ -507,10 +570,10 @@ function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
             autoFocus
           />
           {nameLen > 0 && nameLen < 3 && (
-            <p className="harf-modal-hint warn">⚠ Kamida 3 ta harf kiriting</p>
+            <p className="harf-modal-hint warn"> Kamida 3 ta harf kiriting</p>
           )}
           {multInfo && (
-            <p className="harf-modal-hint ok">📏 {multInfo.label}</p>
+            <p className="harf-modal-hint ok"> {multInfo.label}</p>
           )}
         </div>
       )}
@@ -535,20 +598,20 @@ function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
                       onError={e => { e.target.style.display = 'none' }}
                     />
                   ) : (
-                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', fontSize: '2.4rem' }}>🌹</span>
+                    <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}><RoseSmallIcon size={34} /></span>
                   )}
                   <span className="harf-inline-pkg-tier">
-                    {i === 0 ? 'Standart' : i === 1 ? '⭐ Mashhur' : '👑 Premium'}
+                    {i === 0 ? 'Standart' : i === 1 ? ' Mashhur' : ' Premium'}
                   </span>
                 </div>
                 <p className="harf-inline-pkg-name">{pkg.label}</p>
                 <div className="harf-inline-pkg-flowers">
-                  <span className="harf-inline-red">🌹 {pkg.red} ta</span>
+                  <span className="harf-inline-red"> {pkg.red} ta</span>
                   <span className="harf-inline-plus">+</span>
-                  <span className="harf-inline-white">🤍 {pkg.white} ta</span>
+                  <span className="harf-inline-white"> {pkg.white} ta</span>
                 </div>
                 <p className="harf-inline-pkg-price">{formatPrice(pkg.price)}</p>
-                {selected === pkg.id && <span className="harf-inline-pkg-check">✓</span>}
+                {selected === pkg.id && <span className="harf-inline-pkg-check"><CheckIcon /></span>}
               </button>
             ))}
           </div>
@@ -568,7 +631,7 @@ function HarfInlineSection({ harfPkgs, ismMults, onAdd }) {
             className={`harf-inline-cart-btn${added ? ' success' : ''}`}
             onClick={handleAdd}
           >
-            {added ? "✓ Savatga qo'shildi!" : "🛒 Savatga qo'shish"}
+            {added ? <><CheckIcon /> Savatga qo'shildi!</> : <><CartIcon /> Savatga qo'shish</>}
           </button>
         </div>
       )}
@@ -665,7 +728,7 @@ export default function Catalog({ likedIds, onToggleLike, onAddToCart, catalogDa
 
       <div className="catalog-hero">
         <div className="catalog-hero-pattern" />
-        <span className="catalog-hero-deco">✿</span>
+        <span className="catalog-hero-deco"></span>
         <div className="catalog-hero-content">
           <p className="catalog-hero-eyebrow">GUL KATALOGI</p>
           <h1 className="catalog-hero-title">Barcha gullar</h1>
@@ -690,8 +753,13 @@ export default function Catalog({ likedIds, onToggleLike, onAddToCart, catalogDa
           onClick={() => navigate('/bouquet')}
         >
           <span className="big-cat-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 12 7 21h10l-2-9z"/>
+              <path d="M10 12v-1a2 2 0 0 1 4 0v1"/>
+              <circle cx="8.5" cy="7.5" r="2"/>
+              <circle cx="15.5" cy="7.5" r="2"/>
+              <circle cx="12" cy="5.3" r="2.2"/>
+              <path d="M11 21c.3-1.3 1-1.9 1-1.9s.7.6 1 1.9"/>
             </svg>
           </span>
           <span className="big-cat-label">Buket terish</span>
@@ -723,7 +791,7 @@ export default function Catalog({ likedIds, onToggleLike, onAddToCart, catalogDa
           <div className="catalog-products-grid">
             {filteredProducts.length === 0 ? (
               <div className="catalog-empty">
-                <div className="catalog-empty-icon">🌿</div>
+                <div className="catalog-empty-icon"><LeafIcon /></div>
                 <h3>Mahsulot topilmadi</h3>
                 <p>Boshqa filter tanlang</p>
               </div>
@@ -765,4 +833,3 @@ export default function Catalog({ likedIds, onToggleLike, onAddToCart, catalogDa
     </div>
   )
 }
-

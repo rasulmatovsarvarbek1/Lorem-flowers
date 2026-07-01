@@ -19,7 +19,7 @@ function FlowerImg({ src, alt, emoji }) {
       />
     )
   }
-  return <span style={{ fontSize: '2.2rem', lineHeight: 1 }}>{emoji || '🌸'}</span>
+  return <span style={{ fontSize: '2.2rem', lineHeight: 1 }}>{emoji || ''}</span>
 }
 
 // ─── STEP INDICATOR ─────────────────────────────────────────────
@@ -131,10 +131,10 @@ function Step2Wrapping({ wrapType, onWrapTypeChange, papers, baskets, selected, 
       {/* Qog'oz / Savatcha tanlash */}
       <div style={{ display: 'flex', gap: 10, marginBottom: '1.1rem' }}>
         <button type="button" style={toggleBtnStyle(wrapType === 'paper')} onClick={() => onWrapTypeChange('paper')}>
-          <span style={{ fontSize: '1.2rem' }}>📦</span> Qog'oz
+          <span style={{ fontSize: '1.2rem' }}></span> Qog'oz
         </button>
         <button type="button" style={toggleBtnStyle(wrapType === 'basket')} onClick={() => onWrapTypeChange('basket')}>
-          <span style={{ fontSize: '1.2rem' }}>🧺</span> Savatcha
+          <span style={{ fontSize: '1.2rem' }}></span> Savatcha
         </button>
       </div>
 
@@ -174,7 +174,7 @@ function Step2Wrapping({ wrapType, onWrapTypeChange, papers, baskets, selected, 
       </div>
       {list.length === 0 && (
         <div className="bb-empty">
-          <span>{wrapType === 'basket' ? '🧺' : '📦'}</span>
+          <span>{wrapType === 'basket' ? '' : ''}</span>
           <p>{wrapType === 'basket' ? 'Savatchalar topilmadi' : "Qog'ozlar topilmadi"}</p>
         </div>
       )}
@@ -212,7 +212,7 @@ function Step4Confirm({ flowers, paper, note }) {
       <p className="bb-section-title">Buket tarkibi</p>
 
       <div className="bb-confirm-list">
-        <p className="bb-confirm-subtitle">🌸 Gullar</p>
+        <p className="bb-confirm-subtitle"> Gullar</p>
         {flowers.map(f => (
           <div key={f.id} className="bb-confirm-row">
             <div className="bb-confirm-left">
@@ -230,7 +230,7 @@ function Step4Confirm({ flowers, paper, note }) {
 
         {paper && (
           <>
-            <p className="bb-confirm-subtitle" style={{ marginTop: '1rem' }}>{isBasket ? '🧺 Savatcha' : "📦 Qog'oz"}</p>
+            <p className="bb-confirm-subtitle" style={{ marginTop: '1rem' }}>{isBasket ? ' Savatcha' : " Qog'oz"}</p>
             <div className="bb-confirm-row">
               <div className="bb-confirm-left">
                 <div className="bb-confirm-paper-dot" style={{ background: paper.color || '#e8c4c4' }} />
@@ -243,7 +243,7 @@ function Step4Confirm({ flowers, paper, note }) {
 
         {note && (
           <>
-            <p className="bb-confirm-subtitle" style={{ marginTop: '1rem' }}>📝 Izoh</p>
+            <p className="bb-confirm-subtitle" style={{ marginTop: '1rem' }}> Izoh</p>
             <p className="bb-confirm-note">{note}</p>
           </>
         )}
@@ -289,12 +289,12 @@ export default function BouquetBuilder({ onAddToCart }) {
       } else {
         // Static fallback — donalik mahsulotlar yo'q bo'lsa
         setFlowers([
-          { id: 'f1', name: 'Qizil atirgul', emoji: '🌹', price: 12000, imageUrl: '' },
-          { id: 'f2', name: 'Pion',           emoji: '🌸', price: 18000, imageUrl: '' },
-          { id: 'f3', name: 'Lola',           emoji: '🌷', price: 8000,  imageUrl: '' },
-          { id: 'f4', name: 'Nargiz',         emoji: '🌼', price: 9000,  imageUrl: '' },
-          { id: 'f5', name: 'Kungaboqar',     emoji: '🌻', price: 9500,  imageUrl: '' },
-          { id: 'f6', name: 'Gilos guli',     emoji: '🌺', price: 7000,  imageUrl: '' },
+          { id: 'f1', name: 'Qizil atirgul', price: 12000, imageUrl: '' },
+          { id: 'f2', name: 'Pion',           price: 18000, imageUrl: '' },
+          { id: 'f3', name: 'Lola',           price: 8000,  imageUrl: '' },
+          { id: 'f4', name: 'Nargiz',         price: 9000,  imageUrl: '' },
+          { id: 'f5', name: 'Kungaboqar',     price: 9500,  imageUrl: '' },
+          { id: 'f6', name: 'Gilos guli',     price: 7000,  imageUrl: '' },
         ])
       }
 
@@ -384,9 +384,9 @@ export default function BouquetBuilder({ onAddToCart }) {
       .join('\n  ')
 
     // Telegram uchun to'liq ma'lumot name ichida
-    let bouquetName = `💐 Buket:\n  ${flowerLines}`
-    if (selectedPaper) bouquetName += `\n  📦 Qog'oz: ${selectedPaper.name}`
-    if (note) bouquetName += `\n  📝 Izoh: ${note}`
+    let bouquetName = ` Buket:\n  ${flowerLines}`
+    if (selectedPaper) bouquetName += `\n   Qog'oz: ${selectedPaper.name}`
+    if (note) bouquetName += `\n   Izoh: ${note}`
 
     // Rasmi bor birinchi gulni olish
     const firstWithImg = selectedFlowers.find(f => f.imageUrl)
@@ -396,7 +396,6 @@ export default function BouquetBuilder({ onAddToCart }) {
       name: bouquetName,
       price: totalPrice,
       qty: 1,
-      emoji: '💐',
       imageUrl: firstWithImg?.imageUrl || '',
       isBouquet: true,
       // Checkout va Telegram uchun strukturalashgan ma'lumot
@@ -406,7 +405,6 @@ export default function BouquetBuilder({ onAddToCart }) {
         qty: f.qty,
         price: f.price,
         imageUrl: f.imageUrl || '',
-        emoji: f.emoji || '🌸',
       })),
       wrapping: selectedPaper ? selectedPaper.name : null,
       note: note || null,

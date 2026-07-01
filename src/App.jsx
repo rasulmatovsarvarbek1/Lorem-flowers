@@ -21,6 +21,9 @@ import Admin from './pages/Admin'
 import BouquetBuilder from './pages/BouquetBuilder'
 import { useLiked } from './hooks/useLiked'
 import { useCart } from './hooks/useCart'
+import heroBgImage from './assets/hero-bg.jpg'
+import aboutPhoto1 from './assets/about-photo-1.png'
+import aboutPhoto2 from './assets/about-photo-2.png'
 import './App.css'
 
 // ─── STAR RATING ────────────────────────────────────────────────
@@ -71,9 +74,11 @@ function Navbar({ likedCount, cartCount }) {
     <>
       <nav className="navbar">
         <div className="navbar-logo" style={{ cursor: 'default' }}>
-          <span className="logo-icon">✿</span>
           <div className="logo-text">
-            <span className="logo-name">Lorem Flowers</span>
+            <span className="logo-name">
+              <span className="logo-lorem">Lorem</span>{' '}
+              <span className="logo-flowers">Flowers</span>
+            </span>
             <span className="logo-sub">GUL DO'KONI</span>
           </div>
         </div>
@@ -179,63 +184,59 @@ function Navbar({ likedCount, cartCount }) {
 }
 
 // ─── HOME PAGE ───────────────────────────────────────────────────
-function Hero({ data }) {
-  const { hero } = data
-  const lines = hero.title.split('\n')
+function Hero() {
   return (
-    <section
-      className="hero"
-      style={{
-        backgroundImage: `url(${hero.image})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <div className="hero-overlay" />
+    <section className="hero">
+      <img src={heroBgImage} alt="" className="hero-img" />
       <div className="hero-content">
         <h1 className="hero-title">
-          {lines.map((line, i) => <span key={i}>{line}<br /></span>)}
+          Har bir lahza uchun{' '}
+          <span className="hero-accent">gullar</span>
         </h1>
-        <p className="hero-subtitle">{hero.subtitle}</p>
-        <div className="hero-btns">
+        <p className="hero-subtitle">
+          Tabriklash, sevgi izhori yoki shunchaki kun yaxshi o'tishi uchun <br />
+          eng yangi va chiroyli gul kompozitsiyalarini tanlang.
+        </p>
+        <div className="hero-btn-wrap">
           <Link to="/catalog">
-            <button className="btn-primary">Xarid qilish →</button>
+            <button className="btn-primary hero-btn">Gullar</button>
           </Link>
-          <button className="btn-outline">Kolleksiyalar</button>
         </div>
       </div>
     </section>
   )
 }
-<br/> 
 
-function Collections({ data }) {
-  const { collections } = data
+function AboutMe() {
   return (
-    <section className="collections-section">
-      <div className="section-header">
-        <h2 className="section-title">Maxsus Kolleksiyalar</h2>
-        <p className="section-sub">Hayotingizning har bir muhim lahzasi uchun mukammal gul kompozitsiyalari</p>
-      </div>
-      <div className="collections-grid">
-        {collections.map(col => (
-          <div
-            key={col.id}
-            className="collection-card"
-            style={{
-              backgroundImage: `url(${col.image})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          >
-            <div className="collection-overlay" />
-            <div className="collection-info">
-              <span className="collection-count">{col.count} ta kompozitsiya</span>
-              <h3 className="collection-name">{col.name}</h3>
-              <p className="collection-desc">{col.description}</p>
-            </div>
+    <section className="about-section">
+      <div className="about-inner">
+        <div className="about-photos">
+          <div className="about-photo-frame about-photo-lg">
+            <img src={aboutPhoto1} alt="Gul buketi" />
           </div>
-        ))}
+          <div className="about-photo-frame about-photo-sm">
+            <img src={aboutPhoto2} alt="Buket bilan qiz" />
+          </div>
+        </div>
+        <div className="about-text">
+          <p className="about-script">Biz kimmiz?</p>
+          <h2 className="about-heading">Gullarni sevamiz!</h2>
+          <p className="about-desc">
+            Xohlasangiz, shu yerga o'zingiz haqingizda bir necha so'z yozishingiz mumkin.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+          </p>
+          <a href="/contact" className="about-btn">→ BATAFSIL MA'LUMOT</a>
+          <div className="about-socials">
+            <a href="#" aria-label="Facebook"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.2h-3.1V7.7c0-.9.3-1.6 1.6-1.6h1.7V3.3C16.5 3.2 15.4 3 14.2 3 11.7 3 10 4.5 10 7.3v2.5H7.3V13H10v8h3.5z"/></svg></a>
+            <a href="#" aria-label="Pinterest"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 3 5.9 3 10.2c0 2.6 1.4 4.6 3.6 5.4.3.1.5 0 .6-.3l.3-1.1c.1-.3 0-.5-.2-.7-.6-.7-1-1.6-1-2.9 0-3.5 2.6-6.6 6.9-6.6 3.7 0 5.8 2.3 5.8 5.3 0 4-1.8 7.4-4.4 7.4-1.4 0-2.5-1.2-2.2-2.7.4-1.8 1.3-3.7 1.3-5 0-1.1-.6-2.1-1.9-2.1-1.5 0-2.7 1.6-2.7 3.7 0 1.4.5 2.3.5 2.3l-1.9 8.1c-.6 2.4-.1 5.4 0 5.7 0 .2.2.2.4.1.2-.2 2.1-2.6 2.8-5l1-4.1c.5 1 2 1.8 3.5 1.8 4.6 0 7.8-4.2 7.8-9.8C21 5.6 17.3 2 12 2z"/></svg></a>
+            <a href="#" aria-label="Instagram"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg></a>
+            <a href="#" aria-label="X"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22H16.7l-5.2-6.8L5.5 22H2.3l8.1-9.3L1.4 2h6.8l4.7 6.2L18.9 2zm-1.2 18h1.7L7.4 4H5.6l12.1 16z"/></svg></a>
+            <a href="#" aria-label="TikTok"><svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 2h-3v13.5a2.7 2.7 0 1 1-2-2.6v-3.1a5.8 5.8 0 1 0 5 5.7V8.4a7.1 7.1 0 0 0 4 1.2V6.6a4.1 4.1 0 0 1-4-4.6z"/></svg></a>
+          </div>
+        </div>
       </div>
     </section>
   )
@@ -349,7 +350,7 @@ function HomeProductModal({ product, onClose, onAdd }) {
           onClick={handleAdd}
           style={{ width:'100%', background: added ? '#6a9e5a' : '#c4848a', color:'#fff', border:'none', padding:13, borderRadius:14, fontSize:'0.92rem', fontWeight:600, cursor:'pointer', transition:'background 0.2s' }}
         >
-          {added ? "✓ Savatga qo'shildi!" : "🛒 Savatga qo'shish"}
+          {added ? "Savatga qo'shildi!" : "Savatga qo'shish"}
         </button>
       </div>
     </div>
@@ -484,8 +485,8 @@ function HomePage({ onAddToCart, homeData, homeCatalogData, homeLoading, likedId
   if (homeLoading) return <Loader />
   return (
     <main>
-      <Hero data={homeData} />
-      <Collections data={homeData} />
+      <Hero />
+      <AboutMe />
       <Products onAddToCart={onAddToCart} catalogData={homeCatalogData} likedIds={likedIds} onToggleLike={onToggleLike} />
       <HowItWorks data={homeData} />
     </main>
@@ -506,7 +507,7 @@ function AppLayout() {
         <Route path="/"        element={<HomePage onAddToCart={addToCart} homeData={homeData} homeCatalogData={homeCatalogData} homeLoading={homeLoading} likedIds={likedIds} onToggleLike={toggleLike} />} />
         <Route path="/catalog" element={<Catalog likedIds={likedIds} onToggleLike={toggleLike} onAddToCart={addToCart} catalogData={homeCatalogData} catalogLoading={homeLoading} />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/liked"   element={<Liked likedIds={likedIds} onUnlike={toggleLike} onAddToCart={addToCart} />} />
+        <Route path="/liked"   element={<Liked likedIds={likedIds} onUnlike={toggleLike} onAddToCart={addToCart} catalogData={homeCatalogData} />} />
         <Route path="/cart"     element={<Cart cartItems={cartItems} onRemove={removeFromCart} onUpdateQty={updateQty} onClearCart={clearCart} />} />
         <Route path="/checkout" element={<Checkout cartItems={cartItems} onClearCart={clearCart} />} />
         <Route path="/admin"    element={<Admin />} />

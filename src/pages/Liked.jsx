@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect } from 'react'
-import catalogData from '../data/catalog.json'
 import './Liked.css'
 
 // ─── FORMAT PRICE ───────────────────────────────────────────────
@@ -61,7 +60,7 @@ function LikedCard({ product, onUnlike, onAddToCart, onOpenModal }) {
             className="liked-cart-btn"
             onClick={(e) => { e.stopPropagation(); onAddToCart(product, 1); onUnlike(product.id) }}
           >
-            🛒 Savat
+             Savat
           </button>
         </div>
       </div>
@@ -70,8 +69,9 @@ function LikedCard({ product, onUnlike, onAddToCart, onOpenModal }) {
 }
 
 // ─── LIKED PAGE ─────────────────────────────────────────────────
-export default function Liked({ likedIds, onUnlike, onAddToCart }) {
-  const likedProducts = catalogData.products.filter(p => likedIds.includes(p.id))
+export default function Liked({ likedIds, onUnlike, onAddToCart, catalogData }) {
+  const products = (catalogData && Array.isArray(catalogData.products)) ? catalogData.products : []
+  const likedProducts = products.filter(p => likedIds.includes(p.id))
   const [selectedProduct, setSelectedProduct] = useState(null)
   const closeModal = useCallback(() => setSelectedProduct(null), [])
 
@@ -174,7 +174,7 @@ export default function Liked({ likedIds, onUnlike, onAddToCart }) {
       <div className="liked-grid">
         {likedProducts.length === 0 ? (
           <div className="liked-empty">
-            <div className="liked-empty-icon">🤍</div>
+            <div className="liked-empty-icon"></div>
             <h3>Hali hech narsa yoqtirilmagan</h3>
             <p>Katalogdagi gullarda yurak belgisini bosing</p>
           </div>

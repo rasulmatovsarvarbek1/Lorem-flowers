@@ -1,7 +1,7 @@
 .bb-page {
   max-width: 860px;
   margin: 0 auto;
-  padding: 1.5rem 1rem 8rem;
+  padding: 1.5rem 1rem 2rem;
   min-height: 80vh;
 }
 
@@ -425,10 +425,6 @@
 
 /* ─── BOTTOM BAR ─────────────────────────────────── */
 .bb-bottom {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
   background: #fff;
   border-top: 1.5px solid var(--cream-dark, #e8d5cc);
   padding: 1rem 1.5rem;
@@ -436,8 +432,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  z-index: 100;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+  margin-top: 1rem;
+  border-radius: 0 0 16px 16px;
 }
 
 .bb-bottom-price {
@@ -497,7 +493,7 @@
 
 /* ─── RESPONSIVE ─────────────────────────────────── */
 @media (max-width: 600px) {
-  .bb-page { padding: 1rem 0.75rem 7rem; }
+  .bb-page { padding: 1rem 0.75rem 1.5rem; }
   .bb-flowers-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .bb-paper-grid { grid-template-columns: repeat(3, 1fr); }
   .bb-title { font-size: 1.1rem; }
